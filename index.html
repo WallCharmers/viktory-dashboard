@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Viktory Dashboard 🏆</title>
+  <title>Viktory Dashboard 🇺🇦</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,79 +13,55 @@
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
           colors: {
-            victory: {
-              50: '#f0fdf4',
-              100: '#dcfce7',
-              200: '#bbf7d0',
-              300: '#86efac',
-              400: '#4ade80',
-              500: '#22c55e',
-              600: '#16a34a',
-              700: '#15803d',
-              800: '#166534',
-              900: '#14532d',
-            }
+            victory: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d' },
+            ukraine: { blue: '#0057B7', yellow: '#FFD700' }
           }
         }
       }
     }
   </script>
   <style>
-    .gradient-bg {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-    }
-    .card-glow {
-      box-shadow: 0 0 40px rgba(34, 197, 94, 0.1);
-    }
-    .pulse-green {
-      animation: pulse-green 2s infinite;
-    }
-    @keyframes pulse-green {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-      50% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
-    }
-    .stat-card {
-      backdrop-filter: blur(10px);
-      background: rgba(30, 41, 59, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .alert-card {
-      backdrop-filter: blur(10px);
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-    .table-row:hover {
-      background: rgba(34, 197, 94, 0.05);
-    }
-    .scroll-smooth {
-      scroll-behavior: smooth;
-    }
+    .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
+    .card-glow { box-shadow: 0 0 40px rgba(34, 197, 94, 0.1); }
+    .ukraine-accent { border-top: 3px solid #0057B7; border-bottom: 3px solid #FFD700; }
+    .pulse-value { animation: pulse-value 0.5s ease-out; }
+    @keyframes pulse-value { 0% { transform: scale(1.1); color: #4ade80; } 100% { transform: scale(1); } }
+    .stat-card { backdrop-filter: blur(10px); background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .alert-card { backdrop-filter: blur(10px); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .table-row:hover { background: rgba(34, 197, 94, 0.08); }
+    .sortable { cursor: pointer; user-select: none; }
+    .sortable:hover { color: #4ade80; }
+    .search-input { background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .search-input:focus { border-color: #4ade80; outline: none; box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2); }
+    .freshness-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .freshness-fresh { background: #22c55e; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .action-btn { transition: all 0.2s; }
+    .action-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
   </style>
 </head>
-<body class="gradient-bg min-h-screen font-sans text-white scroll-smooth">
+<body class="gradient-bg min-h-screen font-sans text-white">
   
-  <!-- Header -->
-  <header class="sticky top-0 z-50 backdrop-blur-lg bg-slate-900/80 border-b border-slate-700/50">
-    <div class="max-w-7xl mx-auto px-4 py-4">
+  <!-- Header with Ukraine accent -->
+  <header class="sticky top-0 z-50 backdrop-blur-lg bg-slate-900/90 border-b border-slate-700/50">
+    <div class="h-1 bg-gradient-to-r from-ukraine-blue via-ukraine-blue to-ukraine-yellow"></div>
+    <div class="max-w-7xl mx-auto px-4 py-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-victory-400 to-victory-600 flex items-center justify-center text-xl font-bold pulse-green">
-            V
-          </div>
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-ukraine-blue to-ukraine-yellow flex items-center justify-center text-xl font-bold text-white shadow-lg">V</div>
           <div>
             <h1 class="text-xl font-bold text-white">Viktory Dashboard</h1>
-            <p class="text-xs text-slate-400">January 2026 • Updated Feb 13</p>
+            <div class="flex items-center gap-2 text-xs text-slate-400">
+              <span class="freshness-dot freshness-fresh"></span>
+              <span id="data-freshness">📊 Spreadsheet • Jan 2026 • Updated 6 days ago</span>
+            </div>
           </div>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-victory-500/20 text-victory-400 text-sm font-medium">
-            <span class="w-2 h-2 rounded-full bg-victory-400 animate-pulse"></span>
-            Live
-          </span>
+        <div class="flex items-center gap-3">
+          <button onclick="exportData()" class="action-btn px-3 py-1.5 rounded-lg bg-slate-700/50 text-slate-300 text-sm hover:bg-slate-600/50">📥 Export</button>
+          <span class="text-xs text-slate-500">v2.0</span>
         </div>
       </div>
     </div>
@@ -93,96 +69,95 @@
 
   <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
     
-    <!-- Health Check Banner -->
-    <div id="health-banner" class="rounded-2xl p-6 card-glow">
-      <!-- Dynamically filled -->
-    </div>
+    <!-- 3-Second Health Check -->
+    <div id="health-banner" class="rounded-2xl p-6 card-glow"></div>
 
-    <!-- Key Metrics Grid -->
+    <!-- Key Metrics with Context -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <div class="stat-card rounded-2xl p-5">
-        <div class="flex items-center gap-2 text-slate-400 text-sm mb-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          Revenue
+        <div class="flex items-center justify-between text-slate-400 text-sm mb-2">
+          <span class="flex items-center gap-1.5">💰 Revenue</span>
+          <span class="text-xs bg-slate-700/50 px-2 py-0.5 rounded">Jan 2026</span>
         </div>
         <div class="text-3xl font-bold text-white" id="total-revenue">$0</div>
-        <div class="text-sm text-victory-400 mt-1" id="revenue-trend">↑ vs T12 avg</div>
+        <div class="flex items-center gap-2 mt-2">
+          <span id="revenue-delta" class="text-sm text-victory-400">↑ 0%</span>
+          <span class="text-xs text-slate-500">vs T12 avg</span>
+        </div>
+        <div class="text-xs text-slate-500 mt-1" id="revenue-context">T12 avg: $0</div>
       </div>
       
       <div class="stat-card rounded-2xl p-5">
-        <div class="flex items-center gap-2 text-slate-400 text-sm mb-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-          </svg>
-          Profit
+        <div class="flex items-center justify-between text-slate-400 text-sm mb-2">
+          <span class="flex items-center gap-1.5">📈 Profit</span>
+          <span id="margin-badge" class="text-xs px-2 py-0.5 rounded">0%</span>
         </div>
         <div class="text-3xl font-bold text-victory-400" id="total-profit">$0</div>
-        <div class="text-sm text-slate-400 mt-1" id="profit-margin">0% margin</div>
+        <div class="flex items-center gap-2 mt-2">
+          <span id="profit-delta" class="text-sm">↑ 0%</span>
+          <span class="text-xs text-slate-500">vs T12 avg</span>
+        </div>
+        <div class="text-xs text-slate-500 mt-1" id="profit-context">T12 avg: $0</div>
       </div>
       
       <div class="stat-card rounded-2xl p-5">
-        <div class="flex items-center gap-2 text-slate-400 text-sm mb-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-          </svg>
-          Active SKUs
+        <div class="flex items-center justify-between text-slate-400 text-sm mb-2">
+          <span class="flex items-center gap-1.5">📦 Active SKUs</span>
         </div>
         <div class="text-3xl font-bold text-white" id="active-skus">0</div>
-        <div class="text-sm text-slate-400 mt-1" id="total-skus-text">of 0 total</div>
+        <div class="flex items-center gap-2 mt-2">
+          <span class="text-sm text-slate-400" id="sku-breakdown">0 profitable • 0 losing</span>
+        </div>
+        <div class="text-xs text-slate-500 mt-1" id="total-skus-text">of 0 total SKUs</div>
       </div>
       
       <div class="stat-card rounded-2xl p-5">
-        <div class="flex items-center gap-2 text-slate-400 text-sm mb-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-          </svg>
-          Top SKU
+        <div class="flex items-center justify-between text-slate-400 text-sm mb-2">
+          <span class="flex items-center gap-1.5">🏆 Top Performer</span>
         </div>
-        <div class="text-xl font-bold text-white truncate" id="top-sku">-</div>
-        <div class="text-sm text-victory-400 mt-1" id="top-sku-revenue">$0</div>
+        <div class="text-lg font-bold text-white truncate" id="top-sku">-</div>
+        <div class="text-victory-400 font-semibold" id="top-sku-revenue">$0</div>
+        <div class="text-xs text-slate-500 mt-1" id="top-sku-context">0% margin • 0 units left</div>
       </div>
     </div>
 
-    <!-- Alerts Section -->
-    <div id="alerts-section" class="space-y-4">
-      <!-- Dynamically filled -->
-    </div>
+    <!-- Action-First Alerts -->
+    <div id="alerts-section" class="space-y-4"></div>
 
     <!-- Charts Row -->
     <div class="grid lg:grid-cols-2 gap-6">
-      <!-- Top Performers -->
       <div class="stat-card rounded-2xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <span class="text-victory-400">🏆</span> Top Revenue Generators
-        </h3>
-        <div style="height: 250px; position: relative;">
-          <canvas id="top-revenue-chart"></canvas>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-white flex items-center gap-2">🏆 Top 8 Revenue</h3>
+          <span class="text-xs text-slate-500">📊 Spreadsheet</span>
         </div>
+        <div style="height: 250px; position: relative;"><canvas id="top-revenue-chart"></canvas></div>
       </div>
-      
-      <!-- Profit Distribution -->
       <div class="stat-card rounded-2xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <span class="text-victory-400">💰</span> Profit Distribution
-        </h3>
-        <div style="height: 250px; position: relative;">
-          <canvas id="profit-chart"></canvas>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-white flex items-center gap-2">💰 Profit Distribution</h3>
+          <span class="text-xs text-slate-500">44 active SKUs</span>
         </div>
+        <div style="height: 250px; position: relative;"><canvas id="profit-chart"></canvas></div>
       </div>
     </div>
 
-    <!-- SKU Table -->
+    <!-- Unicorn Table -->
     <div class="stat-card rounded-2xl overflow-hidden">
       <div class="p-6 border-b border-slate-700/50">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h3 class="text-lg font-semibold text-white">All SKUs Performance</h3>
-          <div class="flex items-center gap-2">
-            <button onclick="filterTable('all')" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-victory-500/20 text-victory-400" data-filter="all">All</button>
-            <button onclick="filterTable('profitable')" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-700/50 text-slate-400 hover:text-white" data-filter="profitable">Profitable</button>
-            <button onclick="filterTable('losing')" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-700/50 text-slate-400 hover:text-white" data-filter="losing">Losing $</button>
-            <button onclick="filterTable('lowstock')" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-700/50 text-slate-400 hover:text-white" data-filter="lowstock">Low Stock</button>
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <h3 class="text-lg font-semibold text-white">All SKUs Performance</h3>
+            <span class="text-xs text-slate-500 bg-slate-700/50 px-2 py-1 rounded">📊 Spreadsheet Data</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <input type="text" id="search-input" placeholder="🔍 Search SKU or ASIN..." class="search-input px-3 py-1.5 rounded-lg text-sm text-white w-48" oninput="searchTable(this.value)">
+            <div class="flex items-center gap-1">
+              <button onclick="filterTable('all')" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-victory-500/20 text-victory-400" data-filter="all">All</button>
+              <button onclick="filterTable('profitable')" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-700/50 text-slate-400" data-filter="profitable">✅ Profitable</button>
+              <button onclick="filterTable('losing')" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-700/50 text-slate-400" data-filter="losing">❌ Losing</button>
+              <button onclick="filterTable('lowstock')" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-700/50 text-slate-400" data-filter="lowstock">⚠️ Low Stock</button>
+            </div>
           </div>
         </div>
       </div>
@@ -190,298 +165,119 @@
         <table class="w-full">
           <thead class="bg-slate-800/50">
             <tr class="text-left text-sm text-slate-400">
-              <th class="px-6 py-4 font-medium">SKU</th>
-              <th class="px-6 py-4 font-medium text-right">Revenue</th>
-              <th class="px-6 py-4 font-medium text-right">Profit</th>
-              <th class="px-6 py-4 font-medium text-right">Margin</th>
-              <th class="px-6 py-4 font-medium text-right">AMZ Stock</th>
+              <th class="px-6 py-4 font-medium sortable" onclick="sortTable('sku')">SKU ↕</th>
+              <th class="px-6 py-4 font-medium text-right sortable" onclick="sortTable('revenue')">Revenue ↕</th>
+              <th class="px-6 py-4 font-medium text-right sortable" onclick="sortTable('profit')">Profit ↕</th>
+              <th class="px-6 py-4 font-medium text-right sortable" onclick="sortTable('margin')">Margin ↕</th>
+              <th class="px-6 py-4 font-medium text-right sortable" onclick="sortTable('amz_stock')">AMZ Stock ↕</th>
               <th class="px-6 py-4 font-medium text-right">Total Stock</th>
-              <th class="px-6 py-4 font-medium text-right">vs T12 Avg</th>
+              <th class="px-6 py-4 font-medium text-right sortable" onclick="sortTable('vs_avg')">vs T12 Avg ↕</th>
+              <th class="px-6 py-4 font-medium text-center">Status</th>
             </tr>
           </thead>
-          <tbody id="sku-table-body" class="divide-y divide-slate-700/30">
-            <!-- Dynamically filled -->
-          </tbody>
+          <tbody id="sku-table-body" class="divide-y divide-slate-700/30"></tbody>
         </table>
+      </div>
+      <div class="p-4 border-t border-slate-700/50 flex items-center justify-between text-sm text-slate-400">
+        <span id="table-count">Showing 0 SKUs</span>
+        <button onclick="exportTableCSV()" class="action-btn px-3 py-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-600/50">📥 Export CSV</button>
       </div>
     </div>
 
     <!-- Footer -->
-    <footer class="text-center py-8 text-slate-500 text-sm">
-      <p>Ви готові до перемоги! 🏆</p>
-      <p class="mt-1">Viktory Dashboard v1.0 • Built with real data</p>
+    <footer class="text-center py-8">
+      <p class="text-ukraine-yellow font-medium">Ви готові до перемоги! 🇺🇦</p>
+      <p class="text-slate-500 text-sm mt-1">Viktory Dashboard v2.0 • Every day is a Vik-tory</p>
+      <p class="text-slate-600 text-xs mt-2">Built for Viktor by Lance • WallCharmers</p>
     </footer>
-
   </main>
 
   <script>
-    // Real data from spreadsheet
     const data = {"skus":[{"sku":"3tr_tray","asin":"B08TRMF386","revenue":2237.38,"profit":103.9,"margin":0.046,"t12_avg_revenue":1743.54,"t12_avg_profit":129.89,"t12_peak_revenue":2818.89,"amz_stock":5,"awd_stock":0,"inbound":32,"total_stock":320,"acos":23.78},{"sku":"anc_rus_FBA","asin":"B07DHBBJS6","revenue":2451.77,"profit":678.28,"margin":0.277,"t12_avg_revenue":2369.99,"t12_avg_profit":624.31,"t12_peak_revenue":5492.18,"amz_stock":69,"awd_stock":183,"inbound":0,"total_stock":252,"acos":27.75},{"sku":"anc_whi_FBA","asin":"B07DHBZYMX","revenue":186.94,"profit":3.15,"margin":0.017,"t12_avg_revenue":535.92,"t12_avg_profit":76.23,"t12_peak_revenue":1905.3,"amz_stock":198,"awd_stock":796,"inbound":0,"total_stock":994,"acos":75.12},{"sku":"arb_sanrio_hellokitty_snackbox","asin":"B07VQV7NJY","revenue":238.24,"profit":-101.94,"margin":-0.428,"t12_avg_revenue":3154.47,"t12_avg_profit":225.25,"t12_peak_revenue":8282.18,"amz_stock":0,"awd_stock":0,"inbound":0,"total_stock":0,"acos":0},{"sku":"arr_dbro_0","asin":"B077LBM419","revenue":585.92,"profit":-22.37,"margin":-0.038,"t12_avg_revenue":380.68,"t12_avg_profit":38.23,"t12_peak_revenue":676.8,"amz_stock":209,"awd_stock":536,"inbound":0,"total_stock":745,"acos":17.64},{"sku":"arr_gol_0","asin":"B077L8TNKM","revenue":129,"profit":-7.71,"margin":-0.06,"t12_avg_revenue":135.01,"t12_avg_profit":6.98,"t12_peak_revenue":226.51,"amz_stock":40,"awd_stock":0,"inbound":100,"total_stock":440,"acos":140.63},{"sku":"arrb_end","asin":"B089QSWZVC","revenue":808.75,"profit":-158.81,"margin":-0.196,"t12_avg_revenue":232.48,"t12_avg_profit":-11.76,"t12_peak_revenue":808.75,"amz_stock":59,"awd_stock":372,"inbound":0,"total_stock":432,"acos":36.8},{"sku":"aus_whi_gol_fba","asin":"B071JJ6N1R","revenue":462.94,"profit":-153.26,"margin":-0.331,"t12_avg_revenue":1272.36,"t12_avg_profit":166.43,"t12_peak_revenue":2296.62,"amz_stock":99,"awd_stock":669,"inbound":0,"total_stock":1198,"acos":21.79},{"sku":"ausm_whi_gol_fba","asin":"B075436BJM","revenue":408.65,"profit":51.32,"margin":0.126,"t12_avg_revenue":1223.29,"t12_avg_profit":368.54,"t12_peak_revenue":2360.45,"amz_stock":108,"awd_stock":1494,"inbound":0,"total_stock":1601,"acos":39.94},{"sku":"cat_tow_gol","asin":"B088HDVF7V","revenue":4553.98,"profit":1032.67,"margin":0.227,"t12_avg_revenue":3552,"t12_avg_profit":806.28,"t12_peak_revenue":10169.37,"amz_stock":45,"awd_stock":0,"inbound":0,"total_stock":169,"acos":17.82},{"sku":"caus_nat","asin":"B082WNDD15","revenue":479.94,"profit":69.34,"margin":0.144,"t12_avg_revenue":712.64,"t12_avg_profit":136.06,"t12_peak_revenue":1599.8,"amz_stock":203,"awd_stock":1868,"inbound":0,"total_stock":2070,"acos":39.19},{"sku":"cloud_tp_hol","asin":"B097D1KB7W","revenue":513.54,"profit":13.87,"margin":0.027,"t12_avg_revenue":750.62,"t12_avg_profit":32.64,"t12_peak_revenue":942.32,"amz_stock":1,"awd_stock":0,"inbound":0,"total_stock":1,"acos":44.84},{"sku":"cste_nat","asin":"B082WDDHSL","revenue":3673.5,"profit":364.15,"margin":0.099,"t12_avg_revenue":1465.62,"t12_avg_profit":408.97,"t12_peak_revenue":3673.5,"amz_stock":55,"awd_stock":0,"inbound":6,"total_stock":164,"acos":21.48},{"sku":"dino_tow_gol","asin":"B088HDJNYY","revenue":3304.59,"profit":909.63,"margin":0.275,"t12_avg_revenue":4033.42,"t12_avg_profit":1346.19,"t12_peak_revenue":5448.3,"amz_stock":32,"awd_stock":21,"inbound":16,"total_stock":176,"acos":19.54},{"sku":"dino_tow_rus","asin":"B08JZCFRFB","revenue":2590.2,"profit":877.33,"margin":0.339,"t12_avg_revenue":3388.88,"t12_avg_profit":1182.16,"t12_peak_revenue":4821.42,"amz_stock":83,"awd_stock":723,"inbound":0,"total_stock":806,"acos":17.68},{"sku":"dog_tow_gol","asin":"B088HF4VCJ","revenue":970.47,"profit":323.43,"margin":0.333,"t12_avg_revenue":1556.42,"t12_avg_profit":575.79,"t12_peak_revenue":2506.38,"amz_stock":54,"awd_stock":247,"inbound":0,"total_stock":301,"acos":7.99},{"sku":"ele_tow_gol","asin":"B094NSC4LC","revenue":543.71,"profit":244.78,"margin":0.45,"t12_avg_revenue":750.97,"t12_avg_profit":244.51,"t12_peak_revenue":1226.71,"amz_stock":153,"awd_stock":495,"inbound":0,"total_stock":648,"acos":2.77},{"sku":"frog_tow_gol","asin":"B088HDWG7R","revenue":6967.07,"profit":1626.93,"margin":0.234,"t12_avg_revenue":18934.47,"t12_avg_profit":4816.2,"t12_peak_revenue":51438.45,"amz_stock":1,"awd_stock":0,"inbound":0,"total_stock":399,"acos":27.59},{"sku":"gir_hol_gol","asin":"B08B2ZGR6X","revenue":145.68,"profit":-20.75,"margin":-0.142,"t12_avg_revenue":2371.54,"t12_avg_profit":-224.39,"t12_peak_revenue":3365.08,"amz_stock":3,"awd_stock":0,"inbound":0,"total_stock":211,"acos":16.09},{"sku":"gir_tow_rus","asin":"B0992CQHST","revenue":870.15,"profit":176.59,"margin":0.203,"t12_avg_revenue":1315.91,"t12_avg_profit":290.23,"t12_peak_revenue":2291.65,"amz_stock":246,"awd_stock":0,"inbound":0,"total_stock":343,"acos":22.76},{"sku":"hoo_fish_rus","asin":"B088HCJMVN","revenue":763.92,"profit":64.74,"margin":0.085,"t12_avg_revenue":1133.65,"t12_avg_profit":132.36,"t12_peak_revenue":1791.85,"amz_stock":81,"awd_stock":250,"inbound":0,"total_stock":331,"acos":21.56},{"sku":"hoo_met_3","asin":"B07YLYNSZV","revenue":906.88,"profit":18.81,"margin":0.021,"t12_avg_revenue":1683.8,"t12_avg_profit":378.99,"t12_peak_revenue":2446.06,"amz_stock":76,"awd_stock":37,"inbound":0,"total_stock":344,"acos":77.56},{"sku":"hoo_tow_0","asin":"B07YLYVKXC","revenue":1082.8,"profit":434.72,"margin":0.401,"t12_avg_revenue":1077.78,"t12_avg_profit":303.47,"t12_peak_revenue":1731.22,"amz_stock":53,"awd_stock":24,"inbound":0,"total_stock":197,"acos":28.77},{"sku":"hoo_tow_wb","asin":"B09T33QDGG","revenue":1371.06,"profit":300.93,"margin":0.219,"t12_avg_revenue":945.23,"t12_avg_profit":293.3,"t12_peak_revenue":1371.06,"amz_stock":2,"awd_stock":0,"inbound":0,"total_stock":189,"acos":30.57},{"sku":"key_gol_0","asin":"B07JMTWDRT","revenue":2554.4,"profit":750.12,"margin":0.294,"t12_avg_revenue":1890.8,"t12_avg_profit":501.63,"t12_peak_revenue":3159.72,"amz_stock":25,"awd_stock":33,"inbound":11,"total_stock":125,"acos":17.78},{"sku":"key_rus_0","asin":"B07JXBNJSK","revenue":911.93,"profit":41.45,"margin":0.045,"t12_avg_revenue":909.28,"t12_avg_profit":109.37,"t12_peak_revenue":1789.82,"amz_stock":30,"awd_stock":0,"inbound":0,"total_stock":184,"acos":34.64},{"sku":"mbell_bla_0","asin":"B01N11Y2BU","revenue":39.61,"profit":4.19,"margin":0.106,"t12_avg_revenue":387.69,"t12_avg_profit":139.8,"t12_peak_revenue":953.95,"amz_stock":591,"awd_stock":3434,"inbound":0,"total_stock":4025,"acos":0},{"sku":"mhoo_anc_rus","asin":"B00YFJI4AU","revenue":280,"profit":71.37,"margin":0.255,"t12_avg_revenue":205.35,"t12_avg_profit":58.4,"t12_peak_revenue":574,"amz_stock":80,"awd_stock":1042,"inbound":0,"total_stock":1122,"acos":0},{"sku":"mhoo_oct_1","asin":"B0768LYG66","revenue":468.63,"profit":557.86,"margin":1.19,"t12_avg_revenue":404.24,"t12_avg_profit":261.89,"t12_peak_revenue":1743.71,"amz_stock":15,"awd_stock":202,"inbound":71,"total_stock":288,"acos":0},{"sku":"mhoo_sea_6","asin":"B007ETDEJE","revenue":528.96,"profit":99.78,"margin":0.189,"t12_avg_revenue":312.89,"t12_avg_profit":49.09,"t12_peak_revenue":1401.48,"amz_stock":47,"awd_stock":549,"inbound":0,"total_stock":596,"acos":0},{"sku":"mhoo_sea_blue","asin":"B01N6ROPS9","revenue":697.5,"profit":-29.43,"margin":-0.042,"t12_avg_revenue":215.76,"t12_avg_profit":-9.12,"t12_peak_revenue":697.5,"amz_stock":0,"awd_stock":0,"inbound":0,"total_stock":0,"acos":0},{"sku":"mhoo_star_3","asin":"B015GDCGL6","revenue":253.72,"profit":93.23,"margin":0.367,"t12_avg_revenue":506.57,"t12_avg_profit":198.49,"t12_peak_revenue":2001.44,"amz_stock":144,"awd_stock":144,"inbound":0,"total_stock":552,"acos":0},{"sku":"mhoo_swiv_2","asin":"B01F7RM5CQ","revenue":279.86,"profit":101.94,"margin":0.364,"t12_avg_revenue":121.67,"t12_avg_profit":52.2,"t12_peak_revenue":279.86,"amz_stock":426,"awd_stock":188,"inbound":0,"total_stock":614,"acos":0},{"sku":"mhoo_whale_4","asin":"B01KN105L4","revenue":600,"profit":95.78,"margin":0.16,"t12_avg_revenue":851.86,"t12_avg_profit":172.41,"t12_peak_revenue":2079.61,"amz_stock":26,"awd_stock":227,"inbound":27,"total_stock":346,"acos":0},{"sku":"oct_tow_gol","asin":"B094NTH1CQ","revenue":4385.43,"profit":1010.39,"margin":0.23,"t12_avg_revenue":4446.67,"t12_avg_profit":1176.31,"t12_peak_revenue":7113.73,"amz_stock":39,"awd_stock":129,"inbound":0,"total_stock":258,"acos":21.19},{"sku":"sah_gol_0_FBA","asin":"B00N3DW5Y0","revenue":2250.2,"profit":315.02,"margin":0.14,"t12_avg_revenue":2601.28,"t12_avg_profit":549.42,"t12_peak_revenue":4912.68,"amz_stock":37,"awd_stock":84,"inbound":4,"total_stock":252,"acos":16.8},{"sku":"sahm_gol_0-fba","asin":"B00N3DWCOS","revenue":1541.38,"profit":292.4,"margin":0.19,"t12_avg_revenue":1647.93,"t12_avg_profit":337.87,"t12_peak_revenue":3165.03,"amz_stock":32,"awd_stock":149,"inbound":6,"total_stock":343,"acos":30.61},{"sku":"sarr_dbro_1","asin":"B07C6MDP57","revenue":15.1,"profit":-1.92,"margin":-0.127,"t12_avg_revenue":401.1,"t12_avg_profit":12.89,"t12_peak_revenue":661.07,"amz_stock":0,"awd_stock":0,"inbound":0,"total_stock":0,"acos":0},{"sku":"savm_whi_0-fba","asin":"B00N3DO8RM","revenue":290.64,"profit":-90.94,"margin":-0.313,"t12_avg_revenue":184.17,"t12_avg_profit":-10.57,"t12_peak_revenue":660.44,"amz_stock":135,"awd_stock":526,"inbound":0,"total_stock":661,"acos":51.07},{"sku":"siem_bla_0_FBA","asin":"B00N3DPHFE","revenue":756.24,"profit":72.76,"margin":0.096,"t12_avg_revenue":576.42,"t12_avg_profit":60.87,"t12_peak_revenue":894.05,"amz_stock":46,"awd_stock":87,"inbound":14,"total_stock":147,"acos":29.36},{"sku":"skula_whi_gol_FBA","asin":"B074PVLCZD","revenue":1182.49,"profit":-79.89,"margin":-0.068,"t12_avg_revenue":2099.07,"t12_avg_profit":202.78,"t12_peak_revenue":3429.14,"amz_stock":160,"awd_stock":31,"inbound":4,"total_stock":196,"acos":28.42},{"sku":"skum_whi_gol_FBA","asin":"B071WGFMC7","revenue":3394.6,"profit":633.27,"margin":0.187,"t12_avg_revenue":2163.78,"t12_avg_profit":405.36,"t12_peak_revenue":4477.19,"amz_stock":45,"awd_stock":128,"inbound":3,"total_stock":345,"acos":37.02},{"sku":"vir_whi_0","asin":"B00MB5RXXE","revenue":1624.65,"profit":-115.25,"margin":-0.071,"t12_avg_revenue":1833.69,"t12_avg_profit":337.48,"t12_peak_revenue":2379.5,"amz_stock":151,"awd_stock":449,"inbound":0,"total_stock":943,"acos":14.11},{"sku":"virm2_whi_0-FBA","asin":"B00YB8FADY","revenue":1958.65,"profit":100.9,"margin":0.052,"t12_avg_revenue":1204.68,"t12_avg_profit":86.7,"t12_peak_revenue":3284.39,"amz_stock":55,"awd_stock":350,"inbound":3,"total_stock":668,"acos":22.13}],"summary":{"total_revenue":60261.07,"total_profit":10752.76,"active_skus":44,"total_skus":73,"losing_money":11,"low_stock":21,"month":"January 2026","margin":17.84}};
 
-    // Format currency
-    const formatCurrency = (num) => {
-      if (num >= 1000) {
-        return '$' + (num / 1000).toFixed(1) + 'K';
-      }
-      return '$' + num.toFixed(0);
-    };
+    let currentFilter = 'all', currentSort = { field: 'revenue', dir: 'desc' }, searchQuery = '';
+    const fmt = n => '$' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+    const fmtK = n => n >= 1000 ? '$' + (n/1000).toFixed(1) + 'K' : '$' + n.toFixed(0);
+    const pct = n => (n * 100).toFixed(1) + '%';
+    const delta = (c, a) => a > 0 ? ((c - a) / a * 100) : 0;
 
-    const formatCurrencyFull = (num) => {
-      return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    };
-
-    // Render health banner
     function renderHealthBanner() {
-      const banner = document.getElementById('health-banner');
-      const s = data.summary;
-      const isHealthy = s.losing_money < 5 && s.margin > 15;
-      
-      if (isHealthy) {
-        banner.className = 'rounded-2xl p-6 card-glow bg-gradient-to-r from-victory-900/50 to-victory-800/30 border border-victory-500/30';
-        banner.innerHTML = `
-          <div class="flex items-center gap-4">
-            <div class="w-16 h-16 rounded-2xl bg-victory-500/20 flex items-center justify-center text-3xl">
-              🏆
-            </div>
-            <div>
-              <h2 class="text-2xl font-bold text-victory-400">Business is Healthy!</h2>
-              <p class="text-slate-300 mt-1">${s.margin.toFixed(1)}% profit margin • ${s.active_skus} active SKUs generating revenue</p>
-            </div>
-          </div>
-        `;
-      } else {
-        banner.className = 'rounded-2xl p-6 alert-card';
-        banner.innerHTML = `
-          <div class="flex items-center gap-4">
-            <div class="w-16 h-16 rounded-2xl bg-red-500/20 flex items-center justify-center text-3xl">
-              ⚠️
-            </div>
-            <div>
-              <h2 class="text-2xl font-bold text-red-400">Needs Attention</h2>
-              <p class="text-slate-300 mt-1">${s.losing_money} SKUs losing money • ${s.low_stock} with low stock</p>
-            </div>
-          </div>
-        `;
-      }
+      const s = data.summary, banner = document.getElementById('health-banner');
+      const critical = data.skus.filter(x => x.revenue > 1000 && x.amz_stock < 5).length;
+      const isHealthy = s.losing_money < 5 && s.margin > 15 && critical === 0;
+      banner.className = isHealthy ? 'rounded-2xl p-6 card-glow bg-gradient-to-r from-victory-900/50 to-victory-800/30 border border-victory-500/30' : 'rounded-2xl p-6 alert-card';
+      banner.innerHTML = isHealthy ? `<div class="flex items-center gap-4"><div class="w-16 h-16 rounded-2xl bg-victory-500/20 flex items-center justify-center text-4xl">🏆</div><div class="flex-1"><h2 class="text-2xl font-bold text-victory-400">Business is Healthy!</h2><p class="text-slate-300 mt-1">${s.margin.toFixed(1)}% margin • ${s.active_skus} active SKUs • No critical issues</p></div><div class="text-right hidden sm:block"><div class="text-3xl font-bold text-white">${fmt(s.total_revenue)}</div><div class="text-victory-400">${fmt(s.total_profit)} profit</div></div></div>` : `<div class="flex items-center gap-4"><div class="w-16 h-16 rounded-2xl bg-red-500/20 flex items-center justify-center text-4xl">⚠️</div><div class="flex-1"><h2 class="text-2xl font-bold text-red-400">Needs Attention</h2><p class="text-slate-300 mt-1">${critical > 0 ? `🚨 ${critical} high-revenue SKUs critically low • ` : ''}${s.losing_money} SKUs losing money</p></div><div class="text-right hidden sm:block"><div class="text-3xl font-bold text-white">${fmt(s.total_revenue)}</div><div class="text-sm text-slate-400">${s.margin.toFixed(1)}% margin</div></div></div>`;
     }
 
-    // Render key metrics
     function renderMetrics() {
-      const s = data.summary;
-      document.getElementById('total-revenue').textContent = formatCurrencyFull(s.total_revenue);
-      document.getElementById('total-profit').textContent = formatCurrencyFull(s.total_profit);
-      document.getElementById('profit-margin').textContent = s.margin.toFixed(1) + '% margin';
+      const s = data.summary, t12R = data.skus.reduce((a,x) => a + x.t12_avg_revenue, 0), t12P = data.skus.reduce((a,x) => a + x.t12_avg_profit, 0);
+      const rD = delta(s.total_revenue, t12R), pD = delta(s.total_profit, t12P);
+      document.getElementById('total-revenue').textContent = fmt(s.total_revenue);
+      document.getElementById('revenue-delta').innerHTML = `${rD >= 0 ? '↑' : '↓'} ${Math.abs(rD).toFixed(0)}%`;
+      document.getElementById('revenue-delta').className = `text-sm ${rD >= 0 ? 'text-victory-400' : 'text-red-400'}`;
+      document.getElementById('revenue-context').textContent = `T12 avg: ${fmtK(t12R)}`;
+      document.getElementById('total-profit').textContent = fmt(s.total_profit);
+      document.getElementById('profit-delta').innerHTML = `${pD >= 0 ? '↑' : '↓'} ${Math.abs(pD).toFixed(0)}%`;
+      document.getElementById('profit-delta').className = `text-sm ${pD >= 0 ? 'text-victory-400' : 'text-red-400'}`;
+      document.getElementById('profit-context').textContent = `T12 avg: ${fmtK(t12P)}`;
+      const mb = document.getElementById('margin-badge');
+      mb.textContent = s.margin.toFixed(1) + '%';
+      mb.className = `text-xs px-2 py-0.5 rounded ${s.margin >= 20 ? 'bg-victory-500/30 text-victory-400' : s.margin >= 10 ? 'bg-yellow-500/30 text-yellow-400' : 'bg-red-500/30 text-red-400'}`;
+      const prof = data.skus.filter(x => x.revenue > 0 && x.profit > 0).length, los = data.skus.filter(x => x.revenue > 0 && x.profit < 0).length;
       document.getElementById('active-skus').textContent = s.active_skus;
-      document.getElementById('total-skus-text').textContent = `of ${s.total_skus} total`;
-      
-      // Top SKU
-      const topSku = data.skus.sort((a, b) => b.revenue - a.revenue)[0];
-      document.getElementById('top-sku').textContent = topSku.sku;
-      document.getElementById('top-sku-revenue').textContent = formatCurrencyFull(topSku.revenue);
+      document.getElementById('sku-breakdown').textContent = `${prof} profitable • ${los} losing`;
+      document.getElementById('total-skus-text').textContent = `of ${s.total_skus} total SKUs`;
+      const top = [...data.skus].sort((a,b) => b.revenue - a.revenue)[0];
+      document.getElementById('top-sku').textContent = top.sku;
+      document.getElementById('top-sku-revenue').textContent = fmt(top.revenue);
+      document.getElementById('top-sku-context').textContent = `${pct(top.margin)} margin • ${top.amz_stock} units @ AMZ`;
     }
 
-    // Render alerts
     function renderAlerts() {
-      const alertsSection = document.getElementById('alerts-section');
+      const section = document.getElementById('alerts-section');
       let html = '';
-      
-      // Critical stock alerts
-      const criticalStock = data.skus.filter(s => s.revenue > 500 && s.amz_stock < 10 && s.amz_stock >= 0);
-      if (criticalStock.length > 0) {
-        html += `
-          <div class="alert-card rounded-2xl p-5">
-            <div class="flex items-start gap-4">
-              <div class="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center text-xl flex-shrink-0">
-                📦
-              </div>
-              <div class="flex-1">
-                <h3 class="font-semibold text-red-400">Critical Stock Alert</h3>
-                <p class="text-slate-300 text-sm mt-1">${criticalStock.length} high-revenue SKUs nearly out of stock at Amazon</p>
-                <div class="flex flex-wrap gap-2 mt-3">
-                  ${criticalStock.slice(0, 5).map(s => `
-                    <span class="px-3 py-1 rounded-full bg-red-500/20 text-red-300 text-sm">
-                      ${s.sku} <span class="text-red-400 font-medium">(${s.amz_stock} units)</span>
-                    </span>
-                  `).join('')}
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
+      const critical = data.skus.filter(x => x.revenue > 500 && x.amz_stock < 10 && x.amz_stock >= 0).sort((a,b) => b.revenue - a.revenue);
+      if (critical.length > 0) {
+        html += `<div class="alert-card rounded-2xl p-5"><div class="flex items-start gap-4"><div class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center text-2xl">🚨</div><div class="flex-1"><div class="flex items-center gap-2"><h3 class="font-bold text-red-400">Critical Stock Alert</h3><span class="text-xs bg-red-500/30 text-red-300 px-2 py-0.5 rounded">ACTION REQUIRED</span></div><p class="text-slate-300 text-sm mt-1">${critical.length} high-revenue SKUs will stock out soon</p><div class="mt-3 space-y-2">${critical.slice(0,3).map(s => `<div class="flex items-center justify-between bg-slate-800/50 rounded-lg px-3 py-2"><div><span class="font-medium text-white">${s.sku}</span><span class="text-red-400 ml-2">${s.amz_stock} units</span></div><div class="flex items-center gap-3"><span class="text-slate-400 text-sm">${fmt(s.revenue)} rev</span><span class="text-xs text-slate-500">${s.total_stock - s.amz_stock} in pipeline</span></div></div>`).join('')}</div><p class="text-xs text-slate-500 mt-3">💡 <strong>Next step:</strong> Transfer from AWD to FBA or expedite inbound</p></div></div></div>`;
       }
-      
-      // Money losing SKUs
-      const losers = data.skus.filter(s => s.profit < -50).sort((a, b) => a.profit - b.profit);
+      const losers = data.skus.filter(x => x.profit < -50).sort((a,b) => a.profit - b.profit);
       if (losers.length > 0) {
-        html += `
-          <div class="stat-card rounded-2xl p-5 border border-amber-500/30">
-            <div class="flex items-start gap-4">
-              <div class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-xl flex-shrink-0">
-                💸
-              </div>
-              <div class="flex-1">
-                <h3 class="font-semibold text-amber-400">Money Losing SKUs</h3>
-                <p class="text-slate-300 text-sm mt-1">${losers.length} SKUs with significant losses this month</p>
-                <div class="flex flex-wrap gap-2 mt-3">
-                  ${losers.slice(0, 4).map(s => `
-                    <span class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-sm">
-                      ${s.sku} <span class="text-red-400 font-medium">(${formatCurrencyFull(s.profit)})</span>
-                    </span>
-                  `).join('')}
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
+        const totalLoss = losers.reduce((s,x) => s + x.profit, 0);
+        html += `<div class="stat-card rounded-2xl p-5 border border-amber-500/30"><div class="flex items-start gap-4"><div class="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center text-2xl">💸</div><div class="flex-1"><div class="flex items-center gap-2"><h3 class="font-bold text-amber-400">Money Losing SKUs</h3><span class="text-xs bg-amber-500/30 text-amber-300 px-2 py-0.5 rounded">${fmt(totalLoss)} this month</span></div><p class="text-slate-300 text-sm mt-1">${losers.length} SKUs with significant losses</p><div class="flex flex-wrap gap-2 mt-3">${losers.slice(0,4).map(s => `<span class="px-3 py-1.5 rounded-lg bg-slate-800/50 text-sm"><span class="text-white">${s.sku}</span><span class="text-red-400 font-medium ml-1">${fmt(s.profit)}</span></span>`).join('')}</div><p class="text-xs text-slate-500 mt-3">💡 <strong>Next step:</strong> Review PPC spend, check for price wars, consider discontinuing</p></div></div></div>`;
       }
-      
-      alertsSection.innerHTML = html;
+      section.innerHTML = html;
     }
 
-    // Render charts
     function renderCharts() {
-      // Top revenue chart
-      const topRevenue = [...data.skus].sort((a, b) => b.revenue - a.revenue).slice(0, 8);
-      
-      new Chart(document.getElementById('top-revenue-chart'), {
-        type: 'bar',
-        data: {
-          labels: topRevenue.map(s => s.sku.substring(0, 12)),
-          datasets: [{
-            data: topRevenue.map(s => s.revenue),
-            backgroundColor: topRevenue.map(s => s.profit >= 0 ? 'rgba(34, 197, 94, 0.6)' : 'rgba(239, 68, 68, 0.6)'),
-            borderColor: topRevenue.map(s => s.profit >= 0 ? 'rgba(34, 197, 94, 1)' : 'rgba(239, 68, 68, 1)'),
-            borderWidth: 1,
-            borderRadius: 6,
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: (ctx) => `Revenue: ${formatCurrencyFull(ctx.raw)}`
-              }
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              grid: { color: 'rgba(255,255,255,0.05)' },
-              ticks: { 
-                color: '#94a3b8',
-                callback: (value) => formatCurrency(value)
-              }
-            },
-            x: {
-              grid: { display: false },
-              ticks: { color: '#94a3b8', font: { size: 10 } }
-            }
-          }
-        }
-      });
-
-      // Profit distribution
-      const profitable = data.skus.filter(s => s.revenue > 0 && s.profit > 0);
-      const losing = data.skus.filter(s => s.revenue > 0 && s.profit < 0);
-      const breakeven = data.skus.filter(s => s.revenue > 0 && s.profit === 0);
-      
-      new Chart(document.getElementById('profit-chart'), {
-        type: 'doughnut',
-        data: {
-          labels: ['Profitable', 'Losing Money', 'Break-even'],
-          datasets: [{
-            data: [profitable.length, losing.length, breakeven.length],
-            backgroundColor: [
-              'rgba(34, 197, 94, 0.8)',
-              'rgba(239, 68, 68, 0.8)',
-              'rgba(156, 163, 175, 0.8)'
-            ],
-            borderWidth: 0,
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: { color: '#94a3b8', padding: 20 }
-            }
-          },
-          cutout: '65%'
-        }
-      });
+      const top8 = [...data.skus].sort((a,b) => b.revenue - a.revenue).slice(0,8);
+      new Chart(document.getElementById('top-revenue-chart'), { type: 'bar', data: { labels: top8.map(s => s.sku.length > 14 ? s.sku.substring(0,12) + '…' : s.sku), datasets: [{ data: top8.map(s => s.revenue), backgroundColor: top8.map(s => s.profit >= 0 ? 'rgba(34,197,94,0.6)' : 'rgba(239,68,68,0.6)'), borderColor: top8.map(s => s.profit >= 0 ? 'rgba(34,197,94,1)' : 'rgba(239,68,68,1)'), borderWidth: 1, borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `Revenue: ${fmt(ctx.raw)}` } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', callback: v => fmtK(v) } }, x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } } } } });
+      const prof = data.skus.filter(s => s.revenue > 0 && s.profit > 0).length, los = data.skus.filter(s => s.revenue > 0 && s.profit < 0).length;
+      new Chart(document.getElementById('profit-chart'), { type: 'doughnut', data: { labels: [`Profitable (${prof})`, `Losing (${los})`], datasets: [{ data: [prof, los], backgroundColor: ['rgba(34,197,94,0.8)', 'rgba(239,68,68,0.8)'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 20 } } }, cutout: '65%' } });
     }
 
-    // Render table
-    let currentFilter = 'all';
-    
-    function renderTable() {
-      const tbody = document.getElementById('sku-table-body');
+    function getFilteredSorted() {
       let skus = [...data.skus].filter(s => s.revenue > 0);
-      
-      // Apply filter
-      if (currentFilter === 'profitable') {
-        skus = skus.filter(s => s.profit > 0);
-      } else if (currentFilter === 'losing') {
-        skus = skus.filter(s => s.profit < 0);
-      } else if (currentFilter === 'lowstock') {
-        skus = skus.filter(s => s.amz_stock < 50);
-      }
-      
-      // Sort by revenue
-      skus.sort((a, b) => b.revenue - a.revenue);
-      
-      tbody.innerHTML = skus.map(s => {
-        const vsAvg = s.t12_avg_revenue > 0 ? ((s.revenue - s.t12_avg_revenue) / s.t12_avg_revenue * 100) : 0;
-        const marginColor = s.margin >= 0.2 ? 'text-victory-400' : s.margin >= 0 ? 'text-yellow-400' : 'text-red-400';
-        const stockColor = s.amz_stock < 10 ? 'text-red-400' : s.amz_stock < 50 ? 'text-yellow-400' : 'text-slate-300';
-        
-        return `
-          <tr class="table-row transition-colors">
-            <td class="px-6 py-4">
-              <div class="font-medium text-white">${s.sku}</div>
-              <div class="text-xs text-slate-500">${s.asin}</div>
-            </td>
-            <td class="px-6 py-4 text-right font-medium text-white">${formatCurrencyFull(s.revenue)}</td>
-            <td class="px-6 py-4 text-right font-medium ${s.profit >= 0 ? 'text-victory-400' : 'text-red-400'}">${formatCurrencyFull(s.profit)}</td>
-            <td class="px-6 py-4 text-right ${marginColor}">${(s.margin * 100).toFixed(1)}%</td>
-            <td class="px-6 py-4 text-right ${stockColor}">${s.amz_stock}</td>
-            <td class="px-6 py-4 text-right text-slate-300">${s.total_stock}</td>
-            <td class="px-6 py-4 text-right ${vsAvg >= 0 ? 'text-victory-400' : 'text-red-400'}">
-              ${vsAvg >= 0 ? '↑' : '↓'} ${Math.abs(vsAvg).toFixed(0)}%
-            </td>
-          </tr>
-        `;
-      }).join('');
+      if (currentFilter === 'profitable') skus = skus.filter(s => s.profit > 0);
+      else if (currentFilter === 'losing') skus = skus.filter(s => s.profit < 0);
+      else if (currentFilter === 'lowstock') skus = skus.filter(s => s.amz_stock < 50);
+      if (searchQuery) { const q = searchQuery.toLowerCase(); skus = skus.filter(s => s.sku.toLowerCase().includes(q) || s.asin.toLowerCase().includes(q)); }
+      skus.sort((a,b) => { let va, vb; if (currentSort.field === 'vs_avg') { va = delta(a.revenue, a.t12_avg_revenue); vb = delta(b.revenue, b.t12_avg_revenue); } else { va = a[currentSort.field]; vb = b[currentSort.field]; } if (typeof va === 'string') return currentSort.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va); return currentSort.dir === 'asc' ? va - vb : vb - va; });
+      return skus;
     }
 
-    function filterTable(filter) {
-      currentFilter = filter;
-      
-      // Update button styles
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        if (btn.dataset.filter === filter) {
-          btn.className = 'filter-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-victory-500/20 text-victory-400';
-        } else {
-          btn.className = 'filter-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-700/50 text-slate-400 hover:text-white';
-        }
-      });
-      
-      renderTable();
+    function renderTable() {
+      const skus = getFilteredSorted(), tbody = document.getElementById('sku-table-body');
+      tbody.innerHTML = skus.map(s => { const vsAvg = delta(s.revenue, s.t12_avg_revenue); const mCls = s.margin >= 0.2 ? 'text-victory-400' : s.margin >= 0 ? 'text-yellow-400' : 'text-red-400'; const sCls = s.amz_stock < 10 ? 'text-red-400 font-bold' : s.amz_stock < 50 ? 'text-yellow-400' : 'text-slate-300'; let st = ''; if (s.amz_stock < 10 && s.revenue > 500) st = '<span class="px-2 py-0.5 rounded text-xs bg-red-500/30 text-red-300">⚠️ Restock</span>'; else if (s.profit < 0) st = '<span class="px-2 py-0.5 rounded text-xs bg-amber-500/30 text-amber-300">💸 Losing</span>'; else if (s.margin >= 0.25) st = '<span class="px-2 py-0.5 rounded text-xs bg-victory-500/30 text-victory-400">⭐ High Margin</span>'; else st = '<span class="px-2 py-0.5 rounded text-xs bg-slate-700/50 text-slate-400">OK</span>'; return `<tr class="table-row transition-colors"><td class="px-6 py-4"><div class="font-medium text-white">${s.sku}</div><div class="text-xs text-slate-500">${s.asin}</div></td><td class="px-6 py-4 text-right font-medium text-white">${fmt(s.revenue)}</td><td class="px-6 py-4 text-right font-medium ${s.profit >= 0 ? 'text-victory-400' : 'text-red-400'}">${fmt(s.profit)}</td><td class="px-6 py-4 text-right ${mCls}">${pct(s.margin)}</td><td class="px-6 py-4 text-right ${sCls}">${s.amz_stock}</td><td class="px-6 py-4 text-right text-slate-300">${s.total_stock}</td><td class="px-6 py-4 text-right ${vsAvg >= 0 ? 'text-victory-400' : 'text-red-400'}">${vsAvg >= 0 ? '↑' : '↓'} ${Math.abs(vsAvg).toFixed(0)}%</td><td class="px-6 py-4 text-center">${st}</td></tr>`; }).join('');
+      document.getElementById('table-count').textContent = `Showing ${skus.length} SKUs`;
     }
 
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-      renderHealthBanner();
-      renderMetrics();
-      renderAlerts();
-      renderCharts();
-      renderTable();
-    });
+    function filterTable(f) { currentFilter = f; document.querySelectorAll('.filter-btn').forEach(b => { b.className = b.dataset.filter === f ? 'filter-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-victory-500/20 text-victory-400' : 'filter-btn px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-700/50 text-slate-400'; }); renderTable(); }
+    function sortTable(field) { if (currentSort.field === field) currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc'; else { currentSort.field = field; currentSort.dir = 'desc'; } renderTable(); }
+    function searchTable(q) { searchQuery = q; renderTable(); }
+    function exportTableCSV() { const skus = getFilteredSorted(); const h = ['SKU','ASIN','Revenue','Profit','Margin','AMZ Stock','Total Stock','vs T12 Avg %']; const r = skus.map(s => [s.sku, s.asin, s.revenue, s.profit, (s.margin*100).toFixed(1), s.amz_stock, s.total_stock, delta(s.revenue,s.t12_avg_revenue).toFixed(1)]); const csv = [h, ...r].map(x => x.join(',')).join('\n'); const b = new Blob([csv], {type: 'text/csv'}); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = 'viktory-skus.csv'; a.click(); }
+    function exportData() { const b = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = 'viktory-data.json'; a.click(); }
+
+    document.addEventListener('DOMContentLoaded', () => { renderHealthBanner(); renderMetrics(); renderAlerts(); renderCharts(); renderTable(); });
   </script>
 </body>
 </html>
