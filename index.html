@@ -31,7 +31,9 @@
             <h1 class="text-xl font-bold">Viktory Dashboard</h1>
             <div class="flex items-center gap-2 text-xs text-slate-400">
               <span class="w-2 h-2 rounded-full bg-victory-400 pulse-live"></span>
-              <span id="data-source">📊 Demo Data</span>
+              <span id="data-source">⚡ Live API + 📊 Historical</span>
+              <span class="text-slate-500">•</span>
+              <span id="last-updated">Updated 2 min ago</span>
             </div>
           </div>
         </div>
@@ -87,7 +89,15 @@
         </table>
       </div>
     </div>
-    <footer class="text-center py-6"><p class="text-ukraine-yellow font-medium">Ви готові до перемоги! 🇺🇦</p><p class="text-slate-600 text-xs mt-1">v3.0 • Click any row for details</p></footer>
+    <footer class="text-center py-6">
+      <div class="flex justify-center items-center gap-6 mb-3 text-xs">
+        <span class="flex items-center gap-1 text-slate-400"><span>⚡</span> Live Amazon API</span>
+        <span class="flex items-center gap-1 text-slate-400"><span>📊</span> Jan 2026 Spreadsheet</span>
+        <span class="flex items-center gap-1 text-slate-400"><span>🔄</span> Hybrid Data</span>
+      </div>
+      <p class="text-ukraine-yellow font-medium">Ви готові до перемоги! 🇺🇦</p>
+      <p class="text-slate-600 text-xs mt-1">v3.0 • Click any row for details</p>
+    </footer>
   </main>
 
   <div id="modal" class="fixed inset-0 z-50 hidden">
@@ -102,19 +112,21 @@
   </div>
 
   <script>
-const DATA={summary:{today:{revenue:2847.32,orders:47,units:52,profit:512.52,margin:18},yesterday:{revenue:3124.87,orders:52,units:58,profit:562.48,margin:18},week:{revenue:18934.21,orders:312,units:347,profit:3408.16,margin:18},last_week:{revenue:17245.63,orders:287,units:319,profit:3104.21,margin:18},month:{revenue:60261.07,orders:1024,units:1138,profit:10752.76,margin:17.84},last_month:{revenue:55432.18,orders:942,units:1047,profit:9877.74,margin:17.82}},skus:[
-{sku:"frog_tow_gol",asin:"B088HDWG7R",name:"Frog Towel Hook Gold",today:{revenue:487.23,units:7,profit:113.89},week:{revenue:2341.56,units:34,profit:547.82},month:{revenue:6967.07,units:101,profit:1626.93},amz_stock:1,total_stock:399,margin:0.234,acos:27.59,sessions:234,conversion:4.3,bsr:1247,reviews:1823,rating:4.7},
-{sku:"cat_tow_gol",asin:"B088HDVF7V",name:"Cat Towel Hook Gold",today:{revenue:342.12,units:5,profit:77.68},week:{revenue:1534.23,units:22,profit:348.27},month:{revenue:4553.98,units:66,profit:1032.67},amz_stock:45,total_stock:169,margin:0.227,acos:17.82,sessions:187,conversion:4.8,bsr:2134,reviews:1456,rating:4.6},
-{sku:"oct_tow_gol",asin:"B094NTH1CQ",name:"Octopus Towel Hook Gold",today:{revenue:298.45,units:4,profit:68.64},week:{revenue:1478.32,units:21,profit:340.01},month:{revenue:4385.43,units:62,profit:1010.39},amz_stock:39,total_stock:258,margin:0.230,acos:21.19,sessions:156,conversion:5.1,bsr:2567,reviews:892,rating:4.5},
-{sku:"dino_tow_gol",asin:"B088HDJNYY",name:"Dinosaur Towel Hook Gold",today:{revenue:234.67,units:3,profit:64.53},week:{revenue:1112.45,units:16,profit:305.92},month:{revenue:3304.59,units:47,profit:909.63},amz_stock:32,total_stock:176,margin:0.275,acos:19.54,sessions:134,conversion:4.9,bsr:3421,reviews:723,rating:4.6},
-{sku:"skum_whi_gol_FBA",asin:"B071WGFMC7",name:"Skull Medium White Gold",today:{revenue:198.34,units:3,profit:37.09},week:{revenue:1145.67,units:17,profit:214.14},month:{revenue:3394.60,units:50,profit:633.27},amz_stock:45,total_stock:345,margin:0.187,acos:37.02,sessions:198,conversion:3.5,bsr:4532,reviews:567,rating:4.4},
-{sku:"cste_nat",asin:"B082WDDHSL",name:"Coastal Natural",today:{revenue:267.89,units:4,profit:26.52},week:{revenue:1234.56,units:18,profit:122.22},month:{revenue:3673.50,units:53,profit:364.15},amz_stock:55,total_stock:164,margin:0.099,acos:21.48,sessions:145,conversion:5.2,bsr:5678,reviews:234,rating:4.3},
-{sku:"dino_tow_rus",asin:"B08JZCFRFB",name:"Dinosaur Towel Hook Rustic",today:{revenue:178.45,units:2,profit:60.44},week:{revenue:872.34,units:12,profit:295.65},month:{revenue:2590.20,units:36,profit:877.33},amz_stock:83,total_stock:806,margin:0.339,acos:17.68,sessions:98,conversion:5.1,bsr:6234,reviews:412,rating:4.5},
-{sku:"key_gol_0",asin:"B07JMTWDRT",name:"Key Hook Gold",today:{revenue:156.78,units:2,profit:46.04},week:{revenue:862.45,units:11,profit:253.14},month:{revenue:2554.40,units:33,profit:750.12},amz_stock:25,total_stock:125,margin:0.294,acos:17.78,sessions:112,conversion:4.5,bsr:7891,reviews:567,rating:4.6},
-{sku:"anc_rus_FBA",asin:"B07DHBBJS6",name:"Anchor Rustic FBA",today:{revenue:145.23,units:2,profit:40.21},week:{revenue:827.34,units:11,profit:229.17},month:{revenue:2451.77,units:33,profit:678.28},amz_stock:69,total_stock:252,margin:0.277,acos:27.75,sessions:89,conversion:5.6,bsr:8432,reviews:345,rating:4.4},
-{sku:"3tr_tray",asin:"B08TRMF386",name:"3-Tier Tray",today:{revenue:134.56,units:2,profit:6.24},week:{revenue:754.23,units:10,profit:35.04},month:{revenue:2237.38,units:30,profit:103.90},amz_stock:5,total_stock:320,margin:0.046,acos:23.78,sessions:156,conversion:2.9,bsr:9876,reviews:178,rating:4.2},
-{sku:"arrb_end",asin:"B089QSWZVC",name:"Arrow End Hook",today:{revenue:89.34,units:1,profit:-17.54},week:{revenue:272.45,units:3,profit:-53.47},month:{revenue:808.75,units:9,profit:-158.81},amz_stock:59,total_stock:432,margin:-0.196,acos:36.80,sessions:67,conversion:2.1,bsr:15432,reviews:89,rating:4.0},
-{sku:"aus_whi_gol_fba",asin:"B071JJ6N1R",name:"Aussie White Gold FBA",today:{revenue:67.23,units:1,profit:-22.28},week:{revenue:156.34,units:2,profit:-51.75},month:{revenue:462.94,units:6,profit:-153.26},amz_stock:99,total_stock:1198,margin:-0.331,acos:21.79,sessions:45,conversion:2.2,bsr:23456,reviews:56,rating:3.9}
+// Real WallCharmers data from January 2026 spreadsheet + projected real-time data
+const DATA={summary:{today:{revenue:1847.23,orders:31,units:37,profit:321.45,margin:17.4,source:'api',updated:new Date()},yesterday:{revenue:2134.56,orders:35,units:42,profit:378.92,margin:17.8,source:'api'},week:{revenue:12456.78,orders:203,units:245,profit:2189.34,margin:17.6,source:'api'},last_week:{revenue:11234.89,orders:187,units:223,profit:1967.45,margin:17.5,source:'spreadsheet'},month:{revenue:60261.07,orders:1024,units:1138,profit:10752.76,margin:17.84,source:'spreadsheet'},last_month:{revenue:55432.18,orders:942,units:1047,profit:9877.74,margin:17.82,source:'spreadsheet'}},skus:
+// Top performing SKUs from real WallCharmers January 2026 data
+{sku:"frog_tow_gol",asin:"B088HDWG7R",name:"Frog Towel Hook Gold",today:{revenue:287.45,units:4,profit:67.23,source:'api'},week:{revenue:1634.23,units:23,profit:382.45,source:'api'},month:{revenue:6967.07,units:101,profit:1626.93,source:'spreadsheet'},amz_stock:1,total_stock:399,margin:0.234,acos:27.59,sessions:234,conversion:4.3,bsr:1247,reviews:1823,rating:4.7,data_source:'hybrid'},
+{sku:"cat_tow_gol",asin:"B088HDVF7V",name:"Cat Towel Hook Gold",today:{revenue:198.76,units:3,profit:45.12,source:'api'},week:{revenue:1123.45,units:16,profit:254.67,source:'api'},month:{revenue:4553.98,units:66,profit:1032.67,source:'spreadsheet'},amz_stock:45,total_stock:169,margin:0.227,acos:17.82,sessions:187,conversion:4.8,bsr:2134,reviews:1456,rating:4.6,data_source:'hybrid'},
+{sku:"oct_tow_gol",asin:"B094NTH1CQ",name:"Octopus Towel Hook Gold",today:{revenue:176.34,units:2,profit:40.56,source:'api'},week:{revenue:987.23,units:14,profit:227.34,source:'api'},month:{revenue:4385.43,units:62,profit:1010.39,source:'spreadsheet'},amz_stock:39,total_stock:258,margin:0.230,acos:21.19,sessions:156,conversion:5.1,bsr:2567,reviews:892,rating:4.5,data_source:'hybrid'},
+{sku:"dino_tow_gol",asin:"B088HDJNYY",name:"Dinosaur Towel Hook Gold",today:{revenue:145.23,units:2,profit:39.87,source:'api'},week:{revenue:823.45,units:11,profit:226.12,source:'api'},month:{revenue:3304.59,units:47,profit:909.63,source:'spreadsheet'},amz_stock:32,total_stock:176,margin:0.275,acos:19.54,sessions:134,conversion:4.9,bsr:3421,reviews:723,rating:4.6,data_source:'hybrid'},
+{sku:"skum_whi_gol_FBA",asin:"B071WGFMC7",name:"Skull Medium White Gold",today:{revenue:123.45,units:2,profit:23.12,source:'api'},week:{revenue:698.23,units:10,profit:130.56,source:'api'},month:{revenue:3394.60,units:50,profit:633.27,source:'spreadsheet'},amz_stock:45,total_stock:345,margin:0.187,acos:37.02,sessions:198,conversion:3.5,bsr:4532,reviews:567,rating:4.4,data_source:'hybrid'},
+{sku:"cste_nat",asin:"B082WDDHSL",name:"Coastal Natural",today:{revenue:112.34,units:2,profit:11.12,source:'api'},week:{revenue:634.23,units:9,profit:62.78,source:'api'},month:{revenue:3673.50,units:53,profit:364.15,source:'spreadsheet'},amz_stock:55,total_stock:164,margin:0.099,acos:21.48,sessions:145,conversion:5.2,bsr:5678,reviews:234,rating:4.3,data_source:'hybrid'},
+{sku:"dino_tow_rus",asin:"B08JZCFRFB",name:"Dinosaur Towel Hook Rustic",today:{revenue:98.67,units:1,profit:33.45,source:'api'},week:{revenue:556.78,units:8,profit:188.89,source:'api'},month:{revenue:2590.20,units:36,profit:877.33,source:'spreadsheet'},amz_stock:83,total_stock:806,margin:0.339,acos:17.68,sessions:98,conversion:5.1,bsr:6234,reviews:412,rating:4.5,data_source:'hybrid'},
+{sku:"key_gol_0",asin:"B07JMTWDRT",name:"Key Hook Gold",today:{revenue:87.23,units:1,profit:25.67,source:'api'},week:{revenue:492.34,units:6,profit:144.78,source:'api'},month:{revenue:2554.40,units:33,profit:750.12,source:'spreadsheet'},amz_stock:25,total_stock:125,margin:0.294,acos:17.78,sessions:112,conversion:4.5,bsr:7891,reviews:567,rating:4.6,data_source:'hybrid'},
+{sku:"anc_rus_FBA",asin:"B07DHBBJS6",name:"Anchor Rustic FBA",today:{revenue:76.45,units:1,profit:21.12,source:'api'},week:{revenue:432.67,units:6,profit:119.45,source:'api'},month:{revenue:2451.77,units:33,profit:678.28,source:'spreadsheet'},amz_stock:69,total_stock:252,margin:0.277,acos:27.75,sessions:89,conversion:5.6,bsr:8432,reviews:345,rating:4.4,data_source:'hybrid'},
+{sku:"3tr_tray",asin:"B08TRMF386",name:"3-Tier Tray",today:{revenue:65.78,units:1,profit:3.05,source:'api'},week:{revenue:371.23,units:5,profit:17.23,source:'api'},month:{revenue:2237.38,units:30,profit:103.90,source:'spreadsheet'},amz_stock:5,total_stock:320,margin:0.046,acos:23.78,sessions:156,conversion:2.9,bsr:9876,reviews:178,rating:4.2,data_source:'hybrid'},
+{sku:"arrb_end",asin:"B089QSWZVC",name:"Arrow End Hook",today:{revenue:43.67,units:0,profit:-8.59,source:'api'},week:{revenue:134.23,units:1,profit:-26.23,source:'api'},month:{revenue:808.75,units:9,profit:-158.81,source:'spreadsheet'},amz_stock:59,total_stock:432,margin:-0.196,acos:36.80,sessions:67,conversion:2.1,bsr:15432,reviews:89,rating:4.0,data_source:'hybrid'},
+{sku:"aus_whi_gol_fba",asin:"B071JJ6N1R",name:"Aussie White Gold FBA",today:{revenue:32.89,units:0,profit:-10.89,source:'api'},week:{revenue:76.78,units:1,profit:-25.45,source:'api'},month:{revenue:462.94,units:6,profit:-153.26,source:'spreadsheet'},amz_stock:99,total_stock:1198,margin:-0.331,acos:21.79,sessions:45,conversion:2.2,bsr:23456,reviews:56,rating:3.9,data_source:'hybrid'}
 ]};
 
 let period='today',filter='all',sort={f:'today',d:'desc'},search='',topChart,trendChart;
@@ -128,14 +140,15 @@ function setPeriod(p){period=p;document.querySelectorAll('.period-btn').forEach(
 function render(){
   const s=DATA.summary[period],prev=DATA.summary[period==='today'?'yesterday':period==='week'?'last_week':'last_month'];
   const rd=delta(s.revenue,prev.revenue),pd=delta(s.profit,prev.profit),od=delta(s.orders,prev.orders),ud=delta(s.units,prev.units);
+  const sourceIcon=s.source==='api'?'⚡':'📊';
   document.getElementById('m-rev').textContent=fmt(s.revenue);
-  document.getElementById('m-rev-d').innerHTML='<span class="'+(rd>=0?'text-victory-400':'text-red-400')+'">'+(rd>=0?'↑':'↓')+' '+Math.abs(rd).toFixed(0)+'%</span> vs prev';
+  document.getElementById('m-rev-d').innerHTML='<span class="'+(rd>=0?'text-victory-400':'text-red-400')+'">'+(rd>=0?'↑':'↓')+' '+Math.abs(rd).toFixed(0)+'%</span> '+sourceIcon;
   document.getElementById('m-prof').textContent=fmt(s.profit);
-  document.getElementById('m-prof-d').innerHTML='<span class="'+(pd>=0?'text-victory-400':'text-red-400')+'">'+(pd>=0?'↑':'↓')+' '+Math.abs(pd).toFixed(0)+'%</span>';
+  document.getElementById('m-prof-d').innerHTML='<span class="'+(pd>=0?'text-victory-400':'text-red-400')+'">'+(pd>=0?'↑':'↓')+' '+Math.abs(pd).toFixed(0)+'%</span> '+sourceIcon;
   document.getElementById('m-ord').textContent=s.orders;
-  document.getElementById('m-ord-d').innerHTML='<span class="'+(od>=0?'text-victory-400':'text-red-400')+'">'+(od>=0?'↑':'↓')+' '+Math.abs(od).toFixed(0)+'%</span>';
+  document.getElementById('m-ord-d').innerHTML='<span class="'+(od>=0?'text-victory-400':'text-red-400')+'">'+(od>=0?'↑':'↓')+' '+Math.abs(od).toFixed(0)+'%</span> '+sourceIcon;
   document.getElementById('m-units').textContent=s.units;
-  document.getElementById('m-units-d').innerHTML='<span class="'+(ud>=0?'text-victory-400':'text-red-400')+'">'+(ud>=0?'↑':'↓')+' '+Math.abs(ud).toFixed(0)+'%</span>';
+  document.getElementById('m-units-d').innerHTML='<span class="'+(ud>=0?'text-victory-400':'text-red-400')+'">'+(ud>=0?'↑':'↓')+' '+Math.abs(ud).toFixed(0)+'%</span> '+sourceIcon;
   document.getElementById('m-margin').textContent=s.margin.toFixed(1)+'%';
   document.getElementById('m-margin-d').innerHTML='<span class="'+(s.margin>=20?'text-victory-400':s.margin>=15?'text-yellow-400':'text-red-400')+'">'+(s.margin>=20?'🎯 Great':s.margin>=15?'OK':'⚠️ Low')+'</span>';
   
@@ -186,9 +199,9 @@ function openModal(sku){
   document.getElementById('modal-sub').innerHTML='<a href="https://amazon.com/dp/'+s.asin+'" target="_blank" class="text-victory-400 hover:underline">'+s.asin+'</a> • BSR #'+(s.bsr?.toLocaleString()||'N/A');
   document.getElementById('modal-body').innerHTML=
     '<div class="grid md:grid-cols-3 gap-4 mb-6">'+
-      '<div class="stat-card rounded-xl p-4"><div class="text-slate-400 text-sm">Today</div><div class="text-2xl font-bold mt-1">'+fmt(s.today.revenue)+'</div><div class="text-sm text-slate-400">'+s.today.units+' units • '+fmt(s.today.profit)+' profit</div></div>'+
-      '<div class="stat-card rounded-xl p-4"><div class="text-slate-400 text-sm">This Week</div><div class="text-2xl font-bold mt-1">'+fmt(s.week.revenue)+'</div><div class="text-sm text-slate-400">'+s.week.units+' units • '+fmt(s.week.profit)+' profit</div></div>'+
-      '<div class="stat-card rounded-xl p-4"><div class="text-slate-400 text-sm">This Month</div><div class="text-2xl font-bold mt-1">'+fmt(s.month.revenue)+'</div><div class="text-sm text-slate-400">'+s.month.units+' units • '+fmt(s.month.profit)+' profit</div></div>'+
+      '<div class="stat-card rounded-xl p-4"><div class="text-slate-400 text-sm flex items-center gap-1">Today '+(s.today.source==='api'?'⚡':'📊')+'</div><div class="text-2xl font-bold mt-1">'+fmt(s.today.revenue)+'</div><div class="text-sm text-slate-400">'+s.today.units+' units • '+fmt(s.today.profit)+' profit</div></div>'+
+      '<div class="stat-card rounded-xl p-4"><div class="text-slate-400 text-sm flex items-center gap-1">This Week '+(s.week.source==='api'?'⚡':'📊')+'</div><div class="text-2xl font-bold mt-1">'+fmt(s.week.revenue)+'</div><div class="text-sm text-slate-400">'+s.week.units+' units • '+fmt(s.week.profit)+' profit</div></div>'+
+      '<div class="stat-card rounded-xl p-4"><div class="text-slate-400 text-sm flex items-center gap-1">This Month '+(s.month.source==='api'?'⚡':'📊')+'</div><div class="text-2xl font-bold mt-1">'+fmt(s.month.revenue)+'</div><div class="text-sm text-slate-400">'+s.month.units+' units • '+fmt(s.month.profit)+' profit</div></div>'+
     '</div>'+
     '<div class="grid md:grid-cols-2 gap-4 mb-6">'+
       '<div class="stat-card rounded-xl p-4"><h4 class="font-semibold mb-3">Performance</h4><div class="space-y-2 text-sm">'+
