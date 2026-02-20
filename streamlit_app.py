@@ -545,7 +545,7 @@ def main():
     # --- Data load (silent) ---
     dashboard = get_dashboard()
     data = dashboard.get_dashboard_data()
-    is_live = dashboard._data_source == 'live'
+    is_live = data.get('data_source') == 'sp_api'
     
     # --- Controls bar ---
     ctrl1, ctrl2, ctrl3 = st.columns([3, 1, 1])
