@@ -102,74 +102,70 @@ def check_password():
 if not check_password():
     st.stop()
 
-# Try to import SP-API client
-try:
-    from backend.sp_api_aws import WallCharmersSPAPIAWS
-    SP_API_AVAILABLE = True
-except ImportError:
-    SP_API_AVAILABLE = False
+# --- SP-API Setup (reads credentials from Streamlit secrets) ---
+def _load_sp_api():
+    """Attempt to initialise the SP-API client using Streamlit secrets."""
+    try:
+        from backend.sp_api_aws import WallCharmersSPAPIAWS
+    except ImportError:
+        return None
+    
+    # Bridge Streamlit secrets → environment variables so the backend can read them
+    try:
+        secrets = st.secrets
+        mapping = {
+            'SP_API_CLIENT_ID':     ('sp_api', 'client_id'),
+            'SP_API_CLIENT_SECRET': ('sp_api', 'client_secret'),
+            'SP_API_REFRESH_TOKEN': ('sp_api', 'refresh_token'),
+            'AWS_ACCESS_KEY_ID':    ('aws', 'access_key_id'),
+            'AWS_SECRET_ACCESS_KEY':('aws', 'secret_access_key'),
+            'AWS_REGION':           ('aws', 'region'),
+            'AWS_ROLE_ARN':         ('aws', 'role_arn'),
+            'SELLER_ID':            ('wallcharmers', 'seller_id'),
+            'MARKETPLACE_ID':       ('wallcharmers', 'marketplace_id'),
+        }
+        for env_key, (section, key) in mapping.items():
+            try:
+                val = secrets[section][key]
+                if val and not val.startswith('your_'):
+                    os.environ[env_key] = val
+            except (KeyError, TypeError):
+                pass
+    except Exception:
+        pass  # secrets not configured — that's okay, will use demo data
+    
+    try:
+        return WallCharmersSPAPIAWS()
+    except Exception:
+        return None
+
 
 class ViktoryDashboard:
     def __init__(self):
-        self.sp_api = None
-        if SP_API_AVAILABLE:
-            try:
-                self.sp_api = WallCharmersSPAPIAWS()
-            except Exception as e:
-                st.warning(f"⚠️ SP-API initialization failed: {e}")
-                
+        self.sp_api = _load_sp_api()
+        self._data_source = 'demo'  # will be updated if API succeeds
+
     def get_dashboard_data(self):
-        """Get comprehensive dashboard data with real SP-API integration"""
+        """Get dashboard data — tries real API first, falls back to demo silently."""
         
-        # Try to get real SP-API data
         if self.sp_api:
             try:
-                with st.status("🚀 Connecting to Amazon SP-API...", expanded=False) as status:
-                    st.write("🔐 Authenticating with Amazon...")
-                    
-                    # Test connection first
-                    test_result = self.sp_api.test_connection()
-                    if test_result.get('status') == 'SUCCESS':
-                        st.write("✅ Authentication successful!")
-                        st.write("📊 Fetching orders and inventory...")
-                        
-                        # Get real data
-                        today_orders = self.sp_api.get_orders_today()
-                        week_orders = self.sp_api.get_orders_week()
-                        inventory = self.sp_api.get_inventory()
-                        
-                        # Check for errors
-                        errors = []
-                        if 'error' in today_orders:
-                            errors.append(f"Today's orders: {today_orders['error']}")
-                        if 'error' in week_orders:
-                            errors.append(f"Week orders: {week_orders['error']}")
-                        if 'error' in inventory:
-                            errors.append(f"Inventory: {inventory['error']}")
-                        
-                        if not errors:
-                            st.write("🎉 Real-time data loaded successfully!")
-                            status.update(label="✅ Live Amazon data connected!", state="complete")
-                            return self.process_sp_api_data(today_orders, week_orders, inventory)
-                        else:
-                            st.write(f"⚠️ Some API calls failed: {'; '.join(errors)}")
-                            status.update(label="⚠️ Partial API failure - using demo data", state="error")
-                    else:
-                        st.write(f"❌ Connection failed: {test_result.get('error', 'Unknown error')}")
-                        status.update(label="❌ SP-API connection failed - using demo data", state="error")
-                        
-            except AttributeError as e:
-                if "get_orders_week" in str(e):
-                    st.error("🔧 SP-API backend needs updating - missing get_orders_week method")
-                else:
-                    st.error(f"🔧 SP-API configuration error: {e}")
-            except Exception as e:
-                st.error(f"❌ SP-API connection failed: {e}")
-        else:
-            st.info("🔶 SP-API backend not available - using demo data")
+                today_orders = self.sp_api.get_orders_today()
+                week_orders  = self.sp_api.get_orders_week()
+                inventory    = self.sp_api.get_inventory()
+                
+                has_errors = any(
+                    isinstance(d, dict) and 'error' in d
+                    for d in [today_orders, week_orders, inventory]
+                )
+                
+                if not has_errors:
+                    self._data_source = 'live'
+                    return self.process_sp_api_data(today_orders, week_orders, inventory)
+            except Exception:
+                pass  # fall through to demo data
         
-        # Fallback to enhanced demo data
-        st.info("📊 Using enhanced demo data based on real WallCharmers patterns")
+        self._data_source = 'demo'
         return self.get_enhanced_demo_data()
     
     def process_sp_api_data(self, today_orders, week_orders, inventory):
@@ -546,176 +542,88 @@ def main():
     </div>
     """, unsafe_allow_html=True)
     
-    # Action Bar
-    col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
+    # --- Data load (silent) ---
+    dashboard = get_dashboard()
+    data = dashboard.get_dashboard_data()
+    is_live = dashboard._data_source == 'live'
     
-    with col1:
-        st.markdown("**🎯 Quick Actions:**")
+    # --- Controls bar ---
+    ctrl1, ctrl2, ctrl3 = st.columns([3, 1, 1])
     
-    with col2:
-        if st.button("🔄 Refresh Empire", help="Update Viktor's kingdom data"):
+    period_options = {
+        'today': '🌅 Today',
+        'week': '📈 This Week',
+        'month': '🏆 This Month'
+    }
+    
+    with ctrl1:
+        period = st.selectbox(
+            "Time Period",
+            options=['today', 'week', 'month'],
+            format_func=lambda x: period_options[x],
+            key="period_selector",
+            label_visibility="collapsed"
+        )
+    
+    with ctrl2:
+        if st.button("🔄 Refresh", use_container_width=True):
             st.cache_resource.clear()
             st.rerun()
     
-    with col3:
-        if st.button("📊 Export Viktory", help="Download your triumphant data"):
-            st.balloons()
-            st.success("Viktory data exported! 🏆")
-    
-    with col4:
-        if st.button("💰 Money Hunt", help="Viktor's favorite: find the losers!"):
-            st.session_state["show_losing"] = True
-            st.info("Activated Viktor's money-losing detector! 🔎")
-    
-    # Get dashboard data
-    dashboard = get_dashboard()
-    data = dashboard.get_dashboard_data()
-    
-    # Period Selection with Viktor Style
-    st.markdown("### 📅 Choose Your Viktory Timeline")
-    
-    period_options = {
-        'today': '🌅 Today\'s Triumph',
-        'week': '📈 Weekly Viktory',
-        'month': '🏆 Monthly Dominance'
-    }
-    
-    period = st.selectbox(
-        "**Viktor's Timeline:**",
-        options=['today', 'week', 'month'],
-        format_func=lambda x: period_options[x],
-        key="period_selector",
-        help="Select your viktory timeframe - each tells a different Viktorious tale!"
-    )
+    with ctrl3:
+        source_label = "🟢 Live" if is_live else "🔶 Demo Data"
+        st.button(source_label, disabled=True, use_container_width=True)
     
     st.markdown("---")
     
-    # Premium API Status Dashboard
-    st.markdown("### 🔍 System Status")
-    
+    # --- Status bar (compact) ---
     status_col1, status_col2, status_col3, status_col4 = st.columns(4)
     
     with status_col1:
-        status_icon = get_status_icon(data['api_status'])
-        if 'Live' in status_icon:
-            st.success(f"🟢 **{status_icon}** - Viktorious Connection!")
+        if is_live:
+            st.success("🟢 **Live** • Amazon SP-API")
         else:
-            st.warning(f"🔶 **{status_icon}** - Demo Mode Active")
+            st.info("🔶 **Demo** • Sample Data")
     
     with status_col2:
         last_update = datetime.fromisoformat(data['last_updated'].replace('Z', '+00:00'))
-        time_str = last_update.strftime('%H:%M:%S')
-        st.info(f"⏱️ **Updated:** {time_str}")
+        st.info(f"⏱️ **{last_update.strftime('%H:%M')}**")
     
     with status_col3:
-        data_source = data['data_source'].title()
-        if data_source == 'Sp_Api':
-            data_source = 'Amazon Live'
-        st.info(f"📊 **Source:** {data_source}")
+        skus_count = len(data.get('skus', []))
+        st.info(f"📦 **{skus_count} Products**")
     
     with status_col4:
-        skus_count = len(data.get('skus', []))
-        st.info(f"🎯 **Products:** {skus_count} SKUs")
+        period_label = period_options.get(period, period)
+        st.info(f"📅 **{period_label}**")
     
-    # Viktor's Victory Metrics
-    st.markdown(f"## 🏆 Viktor's {period_options[period]} Report")
-    st.markdown("*Where numbers tell Viktorious tales of triumph and treasure*")
-    
+    # --- Key Metrics ---
     current = data['summary'][period]
     previous_key = {'today': 'yesterday', 'week': 'last_week', 'month': 'last_month'}[period]
     previous = data['summary'][previous_key]
     
-    # Calculate deltas with Viktor commentary
     revenue_delta = ((current['revenue'] - previous['revenue']) / previous['revenue'] * 100) if previous['revenue'] > 0 else 0
     profit_delta = ((current['profit'] - previous['profit']) / previous['profit'] * 100) if previous['profit'] > 0 else 0
     orders_delta = ((current['orders'] - previous['orders']) / previous['orders'] * 100) if previous['orders'] > 0 else 0
     units_delta = ((current['units'] - previous['units']) / previous['units'] * 100) if previous['units'] > 0 else 0
     
-    # Viktor's Viktory Commentary
-    if revenue_delta > 10:
-        viktory_status = "🚀 VIKTORIOUS GROWTH! The empire expands!"
-    elif revenue_delta > 0:
-        viktory_status = "📈 Steady Viktor Viktory - onwards and upwards!"
-    elif revenue_delta > -5:
-        viktory_status = "🤔 Strategic Viktor Pause - regrouping for viktory!"
-    else:
-        viktory_status = "💪 Challenge Accepted - Viktor fights back!"
-    
-    st.info(viktory_status)
-    
-    # Premium Metrics Row
     col1, col2, col3, col4, col5 = st.columns(5)
     
     with col1:
-        delta_text = f"{revenue_delta:+.1f}%"
-        if revenue_delta > 0:
-            delta_text += " 🚀"
-        st.metric(
-            label="💰 Revenue Empire",
-            value=format_currency(current['revenue']),
-            delta=delta_text,
-            help=f"Viktor's treasure chest • Source: {get_status_icon(current['source'])}"
-        )
-    
+        st.metric("Revenue", format_currency(current['revenue']), f"{revenue_delta:+.1f}%")
     with col2:
-        delta_text = f"{profit_delta:+.1f}%"
-        if profit_delta > 5:
-            delta_text += " 💸"
-        st.metric(
-            label="💵 Profit Viktory",
-            value=format_currency(current['profit']),
-            delta=delta_text,
-            help=f"Pure Viktor gold • Margin: {current['margin']:.1f}%"
-        )
-    
+        st.metric("Profit", format_currency(current['profit']), f"{profit_delta:+.1f}%")
     with col3:
-        delta_text = f"{orders_delta:+.1f}%"
-        if orders_delta > 0:
-            delta_text += " 📦"
-        st.metric(
-            label="📦 Order Conquest",
-            value=f"{current['orders']:,}",
-            delta=delta_text,
-            help="Viktor's loyal customers march forth!"
-        )
-    
+        st.metric("Orders", f"{current['orders']:,}", f"{orders_delta:+.1f}%")
     with col4:
-        delta_text = f"{units_delta:+.1f}%"
-        if units_delta > 0:
-            delta_text += " 📦"
-        st.metric(
-            label="📊 Unit Battalion",
-            value=f"{current['units']:,}",
-            delta=delta_text,
-            help="Viktor's product army in action!"
-        )
-    
+        st.metric("Units Sold", f"{current['units']:,}", f"{units_delta:+.1f}%")
     with col5:
-        if current['margin'] >= 25:
-            margin_status = "🎯 LEGENDARY"
-            margin_color = "normal"
-        elif current['margin'] >= 20:
-            margin_status = "🏆 GREAT"
-            margin_color = "normal"
-        elif current['margin'] >= 15:
-            margin_status = "🟡 OK"
-            margin_color = "inverse"
-        else:
-            margin_status = "⚠️ VIKTOR ALERT"
-            margin_color = "off"
-            
-        st.metric(
-            label="📈 Margin Mastery",
-            value=format_percentage(current['margin']),
-            delta=margin_status,
-            delta_color=margin_color,
-            help="Viktor's efficiency rating - higher means more Viktorious!"
-        )
+        st.metric("Margin", format_percentage(current['margin']),
+                  "🟢 Healthy" if current['margin'] >= 15 else "🔴 Low",
+                  delta_color="normal" if current['margin'] >= 15 else "inverse")
     
-    # Viktor's Viktory Analytics
+    # --- Charts ---
     st.markdown("---")
-    st.markdown("## 🏆 Viktor's Viktory Analytics")
-    st.markdown("*Visual tales of triumph from the WallCharmers empire*")
     
     chart_col1, chart_col2 = st.columns(2)
     
