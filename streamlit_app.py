@@ -690,137 +690,198 @@ def main():
     chart_col1, chart_col2 = st.columns(2)
     
     with chart_col1:
-        # Viktor's Champions Chart
-        skus_data = data['skus']
+        st.markdown("#### 🏆 Viktor's Champions")
         
-        # Prepare data for chart
-        chart_data = []
-        for sku in skus_data:
-            if period in sku and 'revenue' in sku[period]:
-                chart_data.append({
-                    'SKU': sku['sku'],
-                    'Revenue': sku[period]['revenue'],
-                    'Margin': sku['margin'],
-                    'Name': sku['name'],
-                    'Profit': sku[period].get('profit', 0)
-                })
-        
-        chart_df = pd.DataFrame(chart_data)
-        
-        if not chart_df.empty:
-            chart_df = chart_df.sort_values('Revenue', ascending=False).head(8)
+        try:
+            # Viktor's Champions Chart
+            skus_data = data.get('skus', [])
             
-            # Viktor's custom colors (Ukrainian theme)
-            fig = px.bar(
-                chart_df, 
-                x='SKU', 
-                y='Revenue',
-                title=f"🏆 Viktor's Champions - {period_options[period]}",
-                color='Margin',
-                color_continuous_scale='RdYlGn',
-                hover_name='Name',
-                hover_data={
-                    'Margin': ':.1%',
-                    'Profit': ':$,.0f'
-                },
-                labels={
-                    'Revenue': 'Viktor Revenue ($)',
-                    'SKU': 'Product Champions',
-                    'Margin': 'Viktory Margin'
-                }
-            )
+            if not skus_data:
+                st.warning("📊 No product data available")
+            else:
+                # Prepare data for chart with error handling
+                chart_data = []
+                for sku in skus_data:
+                    try:
+                        if period in sku and isinstance(sku[period], dict) and 'revenue' in sku[period]:
+                            chart_data.append({
+                                'SKU': sku.get('sku', 'Unknown'),
+                                'Revenue': float(sku[period].get('revenue', 0)),
+                                'Margin': float(sku.get('margin', 0)),
+                                'Name': sku.get('name', 'Unknown Product'),
+                                'Profit': float(sku[period].get('profit', 0))
+                            })
+                    except (KeyError, TypeError, ValueError) as e:
+                        continue  # Skip invalid entries
+                
+                if not chart_data:
+                    st.info(f"📈 No data available for {period_options.get(period, period)}")
+                else:
+                    chart_df = pd.DataFrame(chart_data)
+                    chart_df = chart_df.sort_values('Revenue', ascending=False).head(8)
+                    
+                    # Create chart with enhanced error handling
+                    try:
+                        fig = px.bar(
+                            chart_df, 
+                            x='SKU', 
+                            y='Revenue',
+                            title=f"🏆 Viktor's Champions - {period_options.get(period, period)}",
+                            color='Margin',
+                            color_continuous_scale='RdYlGn',
+                            labels={
+                                'Revenue': 'Viktor Revenue ($)',
+                                'SKU': 'Product Champions',
+                                'Margin': 'Viktory Margin'
+                            }
+                        )
+                        
+                        # Viktor's premium styling
+                        fig.update_layout(
+                            plot_bgcolor='rgba(0,0,0,0)',
+                            paper_bgcolor='rgba(0,0,0,0)',
+                            font_color='#1f2937',
+                            title_font_size=14,
+                            title_x=0.5,
+                            showlegend=False,
+                            height=400,
+                            margin=dict(t=50, b=50, l=50, r=50)
+                        )
+                        
+                        # Enhanced hover template
+                        fig.update_traces(
+                            hovertemplate="<b>%{customdata[3]}</b><br>" +
+                                         "Revenue: $%{y:,.0f}<br>" +
+                                         "Margin: %{customdata[0]:.1%}<br>" +
+                                         "Profit: $%{customdata[1]:,.0f}<br>" +
+                                         "<extra></extra>",
+                            customdata=chart_df[['Margin', 'Profit', 'SKU', 'Name']].values
+                        )
+                        
+                        st.plotly_chart(fig, use_container_width=True, key="champions_chart")
+                        
+                        # Viktor's viktory message
+                        if not chart_df.empty:
+                            top_sku = chart_df.iloc[0]
+                            st.success(f"🏆 **{top_sku['Name']}** leads Viktor's army with ${top_sku['Revenue']:,.0f}!")
+                        
+                    except Exception as chart_error:
+                        st.error(f"📊 Chart rendering error: Unable to display champions chart")
+                        st.info("💡 Try refreshing the data or contact support if this persists")
+                        
+        except Exception as e:
+            st.error("⚠️ Error loading champions data")
+            st.info("🔄 Please try refreshing the page")
+    
+    with chart_col2:
+        st.markdown("#### 📈 Revenue Trend")
+        
+        try:
+            # 7-Day Trend with enhanced styling
+            days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            base_revenue = float(current.get('revenue', 0))
             
-            # Viktor's premium styling
-            fig.update_layout(
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)',
-                font_color='white',
-                title_font_size=16,
-                title_x=0.5,
-                showlegend=False,
-                coloraxis_colorbar=dict(
-                    title="Viktory<br>Margin",
-                    titleside="right",
-                    tickmode="linear",
-                    tick0=0,
-                    dtick=0.1
+            if base_revenue > 0:
+                daily_base = base_revenue if period == 'today' else base_revenue / 7
+                trend_data = [max(0, daily_base * random.uniform(0.7, 1.3)) for _ in days]
+                
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(
+                    x=days,
+                    y=trend_data,
+                    mode='lines+markers',
+                    name='Revenue Trend',
+                    line=dict(color='#10b981', width=3, shape='spline'),
+                    fill='tonexty',
+                    fillcolor='rgba(16, 185, 129, 0.1)',
+                    marker=dict(size=6, color='#059669'),
+                    hovertemplate="<b>%{x}</b><br>Revenue: $%{y:,.0f}<extra></extra>"
+                ))
+                
+                fig.update_layout(
+                    title="📊 7-Day Revenue Trend",
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    font_color='#1f2937',
+                    title_font_size=14,
+                    title_x=0.5,
+                    showlegend=False,
+                    height=400,
+                    margin=dict(t=50, b=50, l=50, r=50),
+                    xaxis=dict(showgrid=True, gridcolor='rgba(0,0,0,0.1)'),
+                    yaxis=dict(showgrid=True, gridcolor='rgba(0,0,0,0.1)')
                 )
-            )
-            
-            # Simple hover template to avoid errors
-            fig.update_traces(
-                hovertemplate="<b>%{hovertext}</b><br>" +
-                             "Revenue: $%{y:,.0f}<br>" +
-                             "Margin: %{customdata[0]:.1%}<br>" +
-                             "<extra></extra>",
-                customdata=chart_df[['Margin']].values,
-                hovertext=chart_df['Name']
-            )
-            
-            st.plotly_chart(fig, use_container_width=True)
-            
-            # Viktor's viktory message
-            top_sku = chart_df.iloc[0]
-            st.success(f"🏆 **{top_sku['Name']}** leads Viktor's army with ${top_sku['Revenue']:,.0f}!")
+                
+                st.plotly_chart(fig, use_container_width=True, key="trend_chart")
+                
+                # Trend insight
+                avg_revenue = sum(trend_data) / len(trend_data)
+                if avg_revenue > daily_base * 1.1:
+                    st.success("📈 Trending upward - Viktor approves!")
+                elif avg_revenue < daily_base * 0.9:
+                    st.warning("📉 Trending down - time to strategize!")
+                else:
+                    st.info("➡️ Steady performance - maintaining course!")
+            else:
+                st.info("📊 No revenue data available for trend analysis")
+                
+        except Exception as e:
+            st.error("⚠️ Error generating trend chart")
+            st.info("🔄 Please try refreshing the data")
     
-    with col2:
-        # 7-Day Trend (simulated)
-        days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-        base_revenue = current['revenue'] if period == 'today' else current['revenue'] / 7
-        trend_data = [base_revenue * random.uniform(0.7, 1.3) for _ in days]
-        
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=days,
-            y=trend_data,
-            mode='lines+markers',
-            name='Revenue Trend',
-            line=dict(color='#4ade80', width=3),
-            fill='tonexty'
-        ))
-        
-        fig.update_layout(
-            title="📊 7-Day Revenue Trend",
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            font_color='white',
-            showlegend=False
+    # Premium Products Table Section
+    st.markdown("---")
+    st.markdown("## 🛍️ Viktor's Product Empire")
+    st.markdown("*Master your inventory like a true Viktor - every product tells a story!*")
+    
+    # Enhanced Filters with Premium Styling
+    filter_col1, filter_col2, filter_col3, filter_col4 = st.columns([2, 1.5, 1.5, 1])
+    
+    with filter_col1:
+        search_term = st.text_input(
+            "🔍 Search Your Kingdom", 
+            placeholder="Search SKU, ASIN, or product name...",
+            help="Find specific products in Viktor's empire"
         )
-        
-        st.plotly_chart(fig, use_container_width=True)
     
-    # Products Table
-    st.subheader("🛍️ Product Performance")
-    
-    # Filters
-    col1, col2, col3 = st.columns([2, 2, 2])
-    
-    with col1:
-        search_term = st.text_input("🔍 Search products:", placeholder="Enter SKU or ASIN...")
-    
-    with col2:
+    with filter_col2:
         filter_option = st.selectbox(
-            "Filter by:",
+            "🎯 Filter Strategy",
             options=['all', 'profitable', 'losing', 'lowstock'],
             format_func=lambda x: {
-                'all': 'All Products',
-                'profitable': '✅ Profitable',
-                'losing': '❌ Losing Money',
-                'lowstock': '⚠️ Low Stock'
-            }[x]
+                'all': '🎆 All Products',
+                'profitable': '💰 Profitable Winners', 
+                'losing': '⚠️ Money Drains',
+                'lowstock': '🚨 Low Inventory'
+            }[x],
+            help="Filter products by performance"
         )
     
-    with col3:
+    with filter_col3:
         sort_by = st.selectbox(
-            "Sort by:",
+            "📈 Sort by Power",
             options=['revenue', 'profit', 'margin', 'stock'],
-            format_func=lambda x: x.capitalize()
+            format_func=lambda x: {
+                'revenue': '💵 Revenue',
+                'profit': '💸 Profit',
+                'margin': '🎯 Margin',
+                'stock': '📦 Stock'
+            }[x],
+            help="Sort products by key metrics"
         )
     
-    # Prepare table data
+    with filter_col4:
+        show_details = st.checkbox(
+            "🔍 Details",
+            help="Show additional product details"
+        )
+    
+    # Prepare table data with error handling
     table_data = []
     
-    for sku in skus_data:
+    try:
+        skus_data = data.get('skus', [])
+        for sku in skus_data:
         if period in sku:
             # Apply search filter
             if search_term and search_term.lower() not in sku['sku'].lower() and search_term.lower() not in sku['asin'].lower():
@@ -847,6 +908,10 @@ def main():
                 'Rating': sku['rating'],
                 'Reviews': sku['reviews']
             })
+    except Exception as e:
+        st.error("⚠️ Error processing product data")
+        st.info("🔄 Please try refreshing the page")
+        table_data = []
     
     if table_data:
         table_df = pd.DataFrame(table_data)
