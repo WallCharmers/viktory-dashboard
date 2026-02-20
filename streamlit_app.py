@@ -876,103 +876,100 @@ def main():
             help="Show additional product details"
         )
     
-    # Prepare table data with error handling
+    # Prepare table data
     table_data = []
+    skus_data = data.get('skus', [])
     
-    try:
-        skus_data = data.get('skus', [])
-        for sku in skus_data:
-        if period in sku:
-            # Apply search filter
-            if search_term and search_term.lower() not in sku['sku'].lower() and search_term.lower() not in sku['asin'].lower():
+    for sku in skus_data:
+        if period not in sku or not isinstance(sku.get(period), dict):
+            continue
+        
+        # Search filter — matches SKU, ASIN, or product name
+        if search_term:
+            term = search_term.lower()
+            if (term not in sku.get('sku', '').lower()
+                    and term not in sku.get('asin', '').lower()
+                    and term not in sku.get('name', '').lower()):
                 continue
-            
-            # Apply category filter
-            if filter_option == 'profitable' and sku['margin'] <= 0:
-                continue
-            elif filter_option == 'losing' and sku['margin'] >= 0:
-                continue
-            elif filter_option == 'lowstock' and sku['amz_stock'] >= 50:
-                continue
-            
-            table_data.append({
-                'SKU': sku['sku'],
-                'Product': sku['name'],
-                'ASIN': sku['asin'],
-                'Revenue': sku[period]['revenue'],
-                'Units': sku[period]['units'],
-                'Profit': sku[period]['profit'],
-                'Margin': sku['margin'] * 100,
-                'AMZ Stock': sku['amz_stock'],
-                'Total Stock': sku['total_stock'],
-                'Rating': sku['rating'],
-                'Reviews': sku['reviews']
-            })
-    except Exception as e:
-        st.error("⚠️ Error processing product data")
-        st.info("🔄 Please try refreshing the page")
-        table_data = []
+        
+        # Category filter
+        if filter_option == 'profitable' and sku.get('margin', 0) <= 0:
+            continue
+        elif filter_option == 'losing' and sku.get('margin', 0) >= 0:
+            continue
+        elif filter_option == 'lowstock' and sku.get('amz_stock', 999) >= 50:
+            continue
+        
+        period_data = sku[period]
+        row = {
+            'Product': sku.get('name', ''),
+            'SKU': sku.get('sku', ''),
+            'Revenue': period_data.get('revenue', 0),
+            'Profit': period_data.get('profit', 0),
+            'Margin': round(sku.get('margin', 0) * 100, 1),
+            'Units': period_data.get('units', 0),
+            'AMZ Stock': sku.get('amz_stock', 0),
+            'Rating': sku.get('rating', 0),
+        }
+        if show_details:
+            row['ASIN'] = sku.get('asin', '')
+            row['Total Stock'] = sku.get('total_stock', 0)
+            row['Reviews'] = sku.get('reviews', 0)
+        table_data.append(row)
     
     if table_data:
         table_df = pd.DataFrame(table_data)
         
-        # Sort data
-        sort_ascending = sort_by in ['stock']
-        if sort_by == 'revenue':
-            table_df = table_df.sort_values('Revenue', ascending=sort_ascending)
-        elif sort_by == 'profit':
-            table_df = table_df.sort_values('Profit', ascending=sort_ascending)
-        elif sort_by == 'margin':
-            table_df = table_df.sort_values('Margin', ascending=sort_ascending)
-        elif sort_by == 'stock':
-            table_df = table_df.sort_values('AMZ Stock', ascending=True)
+        # Sort
+        sort_map = {'revenue': 'Revenue', 'profit': 'Profit', 'margin': 'Margin', 'stock': 'AMZ Stock'}
+        sort_col = sort_map.get(sort_by, 'Revenue')
+        table_df = table_df.sort_values(sort_col, ascending=(sort_by == 'stock'))
         
-        # Format columns for display
-        table_df['Revenue'] = table_df['Revenue'].apply(format_currency)
-        table_df['Profit'] = table_df['Profit'].apply(format_currency)
-        table_df['Margin'] = table_df['Margin'].apply(lambda x: f"{x:.1f}%")
-        table_df['Reviews'] = table_df['Reviews'].apply(lambda x: f"{x:,}")
+        # Build column config
+        col_cfg = {
+            'Product': st.column_config.TextColumn('Product', width='large'),
+            'SKU': st.column_config.TextColumn('SKU', width='small'),
+            'Revenue': st.column_config.NumberColumn('Revenue', format='$%.2f'),
+            'Profit': st.column_config.NumberColumn('Profit', format='$%.2f'),
+            'Margin': st.column_config.NumberColumn('Margin %', format='%.1f%%'),
+            'Units': st.column_config.NumberColumn('Units'),
+            'AMZ Stock': st.column_config.ProgressColumn('AMZ Stock', min_value=0, max_value=100),
+            'Rating': st.column_config.NumberColumn('Rating', format='%.1f ⭐'),
+        }
+        if show_details:
+            col_cfg['ASIN'] = st.column_config.TextColumn('ASIN', width='small')
+            col_cfg['Total Stock'] = st.column_config.NumberColumn('Total Stock')
+            col_cfg['Reviews'] = st.column_config.NumberColumn('Reviews', format='%d')
         
-        # Display table
         st.dataframe(
             table_df,
             use_container_width=True,
             hide_index=True,
-            column_config={
-                "SKU": st.column_config.TextColumn("SKU", width="small"),
-                "Product": st.column_config.TextColumn("Product", width="large"),
-                "ASIN": st.column_config.TextColumn("ASIN", width="small"),
-                "Revenue": st.column_config.TextColumn("Revenue", width="small"),
-                "Profit": st.column_config.TextColumn("Profit", width="small"),
-                "Margin": st.column_config.TextColumn("Margin", width="small"),
-                "AMZ Stock": st.column_config.NumberColumn("AMZ Stock", width="small"),
-                "Total Stock": st.column_config.NumberColumn("Total Stock", width="small"),
-                "Rating": st.column_config.NumberColumn("Rating", width="small", format="%.1f"),
-                "Reviews": st.column_config.TextColumn("Reviews", width="small")
-            }
+            column_config=col_cfg,
         )
         
-        st.caption(f"Showing {len(table_df)} products")
+        # Quick insights row
+        insight_col1, insight_col2, insight_col3 = st.columns(3)
+        with insight_col1:
+            st.caption(f"Showing **{len(table_df)}** products")
+        with insight_col2:
+            total_rev = sum(r['Revenue'] for r in table_data)
+            st.caption(f"Total Revenue: **{format_currency(total_rev)}**")
+        with insight_col3:
+            low_stock = sum(1 for r in table_data if r['AMZ Stock'] < 20)
+            if low_stock > 0:
+                st.caption(f"⚠️ **{low_stock}** products low on stock")
+            else:
+                st.caption("✅ All products well-stocked")
     else:
         st.info("No products match the current filters.")
     
     # Footer
     st.markdown("---")
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        st.caption("⚡ Live Amazon API")
-    
-    with col2:
-        st.caption("📊 Jan 2026 Spreadsheet")
-    
-    with col3:
-        st.caption("🔄 Hybrid Data")
-    
     st.markdown(
-        "<div style='text-align: center; margin-top: 2rem;'>"
-        "<p style='color: #FFD700; font-weight: bold;'>Ви готові до перемоги! 🇺🇦</p>"
-        "<p style='color: #64748b; font-size: 0.875rem;'>v3.0 Streamlit • Viktory Dashboard</p>"
+        "<div style='text-align: center; padding: 1rem 0;'>"
+        "<p style='color: #FFD700; font-weight: bold; margin: 0;'>Ви готові до перемоги! 🇺🇦</p>"
+        "<p style='color: #64748b; font-size: 0.8rem; margin: 0.25rem 0 0 0;'>v3.0 Streamlit • Viktory Dashboard</p>"
         "</div>",
         unsafe_allow_html=True
     )
