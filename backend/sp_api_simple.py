@@ -14,14 +14,20 @@ logger = logging.getLogger(__name__)
 
 def test_sp_api_simple():
     """Test SP-API with just LWA token (no AWS role)"""
+    import os
     
-    # WallCharmers credentials
-    client_id = 'amzn1.application-oa2-client.989c167e4b3d439fa1b49ec0d903d33d'
-    client_secret = 'amzn1.oa2-cs.v1.f25a5855ef9165a35476bec59064820adfea5ee9b4d3fb825252ac0873b4f412'
-    refresh_token = 'Atzr|IwEBIOnz1ydgqlKByNovrdOwUib8ajfCW8gyjCsDmi21kPflzy2zGF5B0Pa-9ZpFVvKvDFSK2u-HJPQWgAZE5YRsSDnHZICqv7RM6ggQoMrjPxaWAsb_b0bXuivBXcTbNJa9Dz28O2t-_Scv7-CCDNxpoQ3CxY8n1G-u6X_f3Hu8nHqtMPcwUUV0DxeQiZYC2lOrGBsOVpg9c6dnbmNJsL0SaNtYv8ExoNHCSLOoSs8np9cq7yP8PwvMRBHV7QYYVItefMDW6j7KKAAXuhT-jlDDVMLgfyKbiARICJLveZJUmUaZUNoNZgljnQVo8JpgMWoBIJs'
+    # Load credentials from environment variables
+    client_id = os.getenv('SP_API_CLIENT_ID')
+    client_secret = os.getenv('SP_API_CLIENT_SECRET')
+    refresh_token = os.getenv('SP_API_REFRESH_TOKEN')
     
-    seller_id = 'ADUJPLWTXWPJI'
-    marketplace_id = 'ATVPDKIKX0DER'
+    seller_id = os.getenv('SELLER_ID')
+    marketplace_id = os.getenv('MARKETPLACE_ID', 'ATVPDKIKX0DER')
+    
+    if not all([client_id, client_secret, refresh_token, seller_id]):
+        print("❌ Missing required environment variables!")
+        print("Please set: SP_API_CLIENT_ID, SP_API_CLIENT_SECRET, SP_API_REFRESH_TOKEN, SELLER_ID")
+        return
     
     print("🇺🇦 WallCharmers SP-API Simple Test")
     print("=" * 40)

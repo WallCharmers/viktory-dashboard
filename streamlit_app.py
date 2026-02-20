@@ -717,12 +717,11 @@ def main():
                 y='Revenue',
                 title=f"🏆 Viktor's Champions - {period_options[period]}",
                 color='Margin',
-                color_continuous_scale=[[0, '#ef4444'], [0.5, '#f59e0b'], [1, '#22c55e']],
+                color_continuous_scale='RdYlGn',
+                hover_name='Name',
                 hover_data={
-                    'Name': True, 
                     'Margin': ':.1%',
-                    'Profit': ':$,.0f',
-                    'SKU': False
+                    'Profit': ':$,.0f'
                 },
                 labels={
                     'Revenue': 'Viktor Revenue ($)',
@@ -749,11 +748,11 @@ def main():
             )
             
             fig.update_traces(
-                hovertemplate="<b>%{customdata[0]}</b><br>" +
+                hovertemplate="<b>%{hovertext}</b><br>" +
                              "Revenue: $%{y:,.0f}<br>" +
-                             "Profit: $%{customdata[2]:,.0f}<br>" +
-                             "Margin: %{customdata[1]:.1%}<br>" +
-                             "<extra></extra>"
+                             "Margin: %{marker.color:.1%}<br>" +
+                             "<extra></extra>",
+                hovertext=chart_df['Name']
             )
             
             st.plotly_chart(fig, use_container_width=True)

@@ -21,20 +21,21 @@ logger = logging.getLogger(__name__)
 
 class WallCharmersSPAPIAWS:
     def __init__(self):
-        # WallCharmers Production Credentials
-        self.client_id = 'amzn1.application-oa2-client.989c167e4b3d439fa1b49ec0d903d33d'
-        self.client_secret = 'amzn1.oa2-cs.v1.f25a5855ef9165a35476bec59064820adfea5ee9b4d3fb825252ac0873b4f412'
-        self.refresh_token = 'Atzr|IwEBIOnz1ydgqlKByNovrdOwUib8ajfCW8gyjCsDmi21kPflzy2zGF5B0Pa-9ZpFVvKvDFSK2u-HJPQWgAZE5YRsSDnHZICqv7RM6ggQoMrjPxaWAsb_b0bXuivBXcTbNJa9Dz28O2t-_Scv7-CCDNxpoQ3CxY8n1G-u6X_f3Hu8nHqtMPcwUUV0DxeQiZYC2lOrGBsOVpg9c6dnbmNJsL0SaNtYv8ExoNHCSLOoSs8np9cq7yP8PwvMRBHV7QYYVItefMDW6j7KKAAXuhT-jlDDVMLgfyKbiARICJLveZJUmUaZUNoNZgljnQVo8JpgMWoBIJs'
+        # Load credentials from environment variables
+        import os
+        self.client_id = os.getenv('SP_API_CLIENT_ID')
+        self.client_secret = os.getenv('SP_API_CLIENT_SECRET')
+        self.refresh_token = os.getenv('SP_API_REFRESH_TOKEN')
         
-        # AWS Configuration
-        self.aws_access_key = 'AKIAURPI6IR42PVKNNR6'
-        self.aws_secret_key = '9dVVziAkq98EjjMQVrJnTPvXx2KiLgAA3J+5X6WxI'
-        self.role_arn = 'arn:aws:iam::312410522745:role/VIKTORYdashboard-SPAPI-AssumeRole'
-        self.region = 'us-east-1'
+        # AWS Configuration from environment
+        self.aws_access_key = os.getenv('AWS_ACCESS_KEY_ID')
+        self.aws_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+        self.role_arn = os.getenv('AWS_ROLE_ARN')
+        self.region = os.getenv('AWS_REGION', 'us-east-1')
         
         # SP-API Configuration
-        self.seller_id = 'ADUJPLWTXWPJI'
-        self.marketplace_id = 'ATVPDKIKX0DER'
+        self.seller_id = os.getenv('SELLER_ID')
+        self.marketplace_id = os.getenv('MARKETPLACE_ID', 'ATVPDKIKX0DER')
         self.base_url = 'https://sellingpartnerapi-na.amazon.com'
         self.lwa_url = 'https://api.amazon.com/auth/o2/token'
         
