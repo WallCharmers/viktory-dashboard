@@ -33,7 +33,7 @@ def check_password():
         if st.session_state["password"] == st.secrets["app_password"]:
             st.session_state["password_correct"] = True
             del st.session_state["password"]  # don't store password
-            st.balloons()  # Victory celebration!
+            st.balloons()  # Viktory celebration!
         else:
             st.session_state["password_correct"] = False
 
@@ -47,7 +47,7 @@ def check_password():
                 🏆 Viktory Dashboard
             </div>
             <p style='font-size: 1.2rem; color: #64748b; margin-bottom: 3rem;'>
-                WallCharmers Analytics Portal • Viktor's Victory Vault
+                WallCharmers Analytics Portal • Viktor's Viktory Vault
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -508,7 +508,7 @@ def main():
             🏆 Viktory Dashboard
         </h1>
         <p style='font-size: 1.1rem; color: #64748b; margin: 0.5rem 0; font-weight: 500;'>
-            WallCharmers Analytics Command Center • Viktor's Victory Engine
+            WallCharmers Analytics Command Center • Viktor's Viktory Engine
         </p>
         <p style='font-size: 0.9rem; color: #94a3b8; margin: 0;'>
             Where every chart tells a Viktorious story 📈
@@ -528,9 +528,9 @@ def main():
             st.rerun()
     
     with col3:
-        if st.button("📊 Export Victory", help="Download your triumphant data"):
+        if st.button("📊 Export Viktory", help="Download your triumphant data"):
             st.balloons()
-            st.success("Victory data exported! 🏆")
+            st.success("Viktory data exported! 🏆")
     
     with col4:
         if st.button("💰 Money Hunt", help="Viktor's favorite: find the losers!"):
@@ -542,11 +542,11 @@ def main():
     data = dashboard.get_dashboard_data()
     
     # Period Selection with Viktor Style
-    st.markdown("### 📅 Choose Your Victory Timeline")
+    st.markdown("### 📅 Choose Your Viktory Timeline")
     
     period_options = {
         'today': '🌅 Today\'s Triumph',
-        'week': '📈 Weekly Victory',
+        'week': '📈 Weekly Viktory',
         'month': '🏆 Monthly Dominance'
     }
     
@@ -555,7 +555,7 @@ def main():
         options=['today', 'week', 'month'],
         format_func=lambda x: period_options[x],
         key="period_selector",
-        help="Select your victory timeframe - each tells a different Viktorious tale!"
+        help="Select your viktory timeframe - each tells a different Viktorious tale!"
     )
     
     st.markdown("---")
@@ -601,17 +601,17 @@ def main():
     orders_delta = ((current['orders'] - previous['orders']) / previous['orders'] * 100) if previous['orders'] > 0 else 0
     units_delta = ((current['units'] - previous['units']) / previous['units'] * 100) if previous['units'] > 0 else 0
     
-    # Viktor's Victory Commentary
+    # Viktor's Viktory Commentary
     if revenue_delta > 10:
-        victory_status = "🚀 VIKTORIOUS GROWTH! The empire expands!"
+        viktory_status = "🚀 VIKTORIOUS GROWTH! The empire expands!"
     elif revenue_delta > 0:
-        victory_status = "📈 Steady Viktor Victory - onwards and upwards!"
+        viktory_status = "📈 Steady Viktor Viktory - onwards and upwards!"
     elif revenue_delta > -5:
-        victory_status = "🤔 Strategic Viktor Pause - regrouping for victory!"
+        viktory_status = "🤔 Strategic Viktor Pause - regrouping for viktory!"
     else:
-        victory_status = "💪 Challenge Accepted - Viktor fights back!"
+        viktory_status = "💪 Challenge Accepted - Viktor fights back!"
     
-    st.info(victory_status)
+    st.info(viktory_status)
     
     # Premium Metrics Row
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -632,7 +632,7 @@ def main():
         if profit_delta > 5:
             delta_text += " 💸"
         st.metric(
-            label="💵 Profit Victory", 
+            label="💵 Profit Viktory",
             value=format_currency(current['profit']),
             delta=delta_text,
             help=f"Pure Viktor gold • Margin: {current['margin']:.1f}%"
@@ -682,9 +682,9 @@ def main():
             help="Viktor's efficiency rating - higher means more Viktorious!"
         )
     
-    # Viktor's Victory Analytics
+    # Viktor's Viktory Analytics
     st.markdown("---")
-    st.markdown("## 🏆 Viktor's Victory Analytics")
+    st.markdown("## 🏆 Viktor's Viktory Analytics")
     st.markdown("*Visual tales of triumph from the WallCharmers empire*")
     
     chart_col1, chart_col2 = st.columns(2)
@@ -726,7 +726,7 @@ def main():
                 labels={
                     'Revenue': 'Viktor Revenue ($)',
                     'SKU': 'Product Champions',
-                    'Margin': 'Victory Margin'
+                    'Margin': 'Viktory Margin'
                 }
             )
             
@@ -739,7 +739,7 @@ def main():
                 title_x=0.5,
                 showlegend=False,
                 coloraxis_colorbar=dict(
-                    title="Victory<br>Margin",
+                    title="Viktory<br>Margin",
                     titleside="right",
                     tickmode="linear",
                     tick0=0,
@@ -747,17 +747,19 @@ def main():
                 )
             )
             
+            # Simple hover template to avoid errors
             fig.update_traces(
                 hovertemplate="<b>%{hovertext}</b><br>" +
                              "Revenue: $%{y:,.0f}<br>" +
-                             "Margin: %{marker.color:.1%}<br>" +
+                             "Margin: %{customdata[0]:.1%}<br>" +
                              "<extra></extra>",
+                customdata=chart_df[['Margin']].values,
                 hovertext=chart_df['Name']
             )
             
             st.plotly_chart(fig, use_container_width=True)
             
-            # Viktor's victory message
+            # Viktor's viktory message
             top_sku = chart_df.iloc[0]
             st.success(f"🏆 **{top_sku['Name']}** leads Viktor's army with ${top_sku['Revenue']:,.0f}!")
     
