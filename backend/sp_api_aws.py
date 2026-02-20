@@ -216,6 +216,16 @@ class WallCharmersSPAPIAWS:
             'OrderStatuses': 'Shipped,Delivered'
         }
         return self.make_sp_api_call('/orders/v0/orders', params)
+    
+    def get_orders_week(self):
+        """Get this week's orders"""
+        week_ago = datetime.utcnow() - timedelta(days=7)
+        params = {
+            'MarketplaceIds': self.marketplace_id,
+            'CreatedAfter': week_ago.isoformat() + 'Z',
+            'OrderStatuses': 'Shipped,Delivered'
+        }
+        return self.make_sp_api_call('/orders/v0/orders', params)
 
     def get_inventory(self):
         """Get inventory levels"""

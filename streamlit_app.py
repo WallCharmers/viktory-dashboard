@@ -119,27 +119,57 @@ class ViktoryDashboard:
                 st.warning(f"⚠️ SP-API initialization failed: {e}")
                 
     def get_dashboard_data(self):
-        """Get comprehensive dashboard data"""
+        """Get comprehensive dashboard data with real SP-API integration"""
         
         # Try to get real SP-API data
         if self.sp_api:
             try:
-                st.info("🚀 Fetching real SP-API data...")
-                
-                # Get today's orders
-                today_orders = self.sp_api.get_orders_today()
-                week_orders = self.sp_api.get_orders_week() 
-                inventory = self.sp_api.get_inventory()
-                
-                if not any('error' in data for data in [today_orders, week_orders, inventory]):
-                    return self.process_sp_api_data(today_orders, week_orders, inventory)
-                else:
-                    st.warning("⚠️ SP-API returned errors, using fallback data")
+                with st.status("🚀 Connecting to Amazon SP-API...", expanded=False) as status:
+                    st.write("🔐 Authenticating with Amazon...")
                     
+                    # Test connection first
+                    test_result = self.sp_api.test_connection()
+                    if test_result.get('status') == 'SUCCESS':
+                        st.write("✅ Authentication successful!")
+                        st.write("📊 Fetching orders and inventory...")
+                        
+                        # Get real data
+                        today_orders = self.sp_api.get_orders_today()
+                        week_orders = self.sp_api.get_orders_week()
+                        inventory = self.sp_api.get_inventory()
+                        
+                        # Check for errors
+                        errors = []
+                        if 'error' in today_orders:
+                            errors.append(f"Today's orders: {today_orders['error']}")
+                        if 'error' in week_orders:
+                            errors.append(f"Week orders: {week_orders['error']}")
+                        if 'error' in inventory:
+                            errors.append(f"Inventory: {inventory['error']}")
+                        
+                        if not errors:
+                            st.write("🎉 Real-time data loaded successfully!")
+                            status.update(label="✅ Live Amazon data connected!", state="complete")
+                            return self.process_sp_api_data(today_orders, week_orders, inventory)
+                        else:
+                            st.write(f"⚠️ Some API calls failed: {'; '.join(errors)}")
+                            status.update(label="⚠️ Partial API failure - using demo data", state="error")
+                    else:
+                        st.write(f"❌ Connection failed: {test_result.get('error', 'Unknown error')}")
+                        status.update(label="❌ SP-API connection failed - using demo data", state="error")
+                        
+            except AttributeError as e:
+                if "get_orders_week" in str(e):
+                    st.error("🔧 SP-API backend needs updating - missing get_orders_week method")
+                else:
+                    st.error(f"🔧 SP-API configuration error: {e}")
             except Exception as e:
-                st.warning(f"❌ SP-API call failed: {e}")
+                st.error(f"❌ SP-API connection failed: {e}")
+        else:
+            st.info("🔶 SP-API backend not available - using demo data")
         
         # Fallback to enhanced demo data
+        st.info("📊 Using enhanced demo data based on real WallCharmers patterns")
         return self.get_enhanced_demo_data()
     
     def process_sp_api_data(self, today_orders, week_orders, inventory):
